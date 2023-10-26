@@ -3,6 +3,8 @@
  * @url https://chainlist.org
  */
 
+import { WCChains } from "./common-types";
+
 /**
  * Types
  */
@@ -11,7 +13,7 @@ export type TEIP155Chain = keyof typeof EIP155_CHAINS;
 /**
  * Chains
  */
-export const EIP155_MAINNET_CHAINS = {
+export const EIP155_MAINNET_CHAINS: WCChains = {
   "eip155:1": {
     chainId: 1,
     name: "Ethereum",
@@ -105,13 +107,15 @@ export const EIP155_CHAINS = {
 /**
  * Methods
  */
-export const EIP155_SIGNING_METHODS = {
-  PERSONAL_SIGN: "personal_sign",
-  ETH_SIGN: "eth_sign",
-  ETH_SIGN_TRANSACTION: "eth_signTransaction",
-  ETH_SIGN_TYPED_DATA: "eth_signTypedData",
-  ETH_SIGN_TYPED_DATA_V3: "eth_signTypedData_v3",
-  ETH_SIGN_TYPED_DATA_V4: "eth_signTypedData_v4",
-  ETH_SEND_RAW_TRANSACTION: "eth_sendRawTransaction",
-  ETH_SEND_TRANSACTION: "eth_sendTransaction",
-};
+export enum EIP155Method {
+  PersonalSign = "personal_sign",
+  EthSign = "eth_sign",
+  EthSignTransaction = "eth_signTransaction",
+  SignTypedData = "eth_signTypedData",
+  SignTypedDataV3 = "eth_signTypedData_v3",
+  SignTypedDataV4 = "eth_signTypedData_v4",
+  EthSendRawTransaction = "eth_sendRawTransaction",
+  EthSendTransaction = "eth_sendTransaction",
+  // SwitchChain = "wallet_switchEthereumChain",
+  // AddChain = "wallet_addEthereumChain",
+}
