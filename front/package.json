@@ -17,6 +17,7 @@
     "@simplewebauthn/browser": "^8.3.3",
     "@simplewebauthn/typescript-types": "^8.3.3",
     "@walletconnect/core": "^2.10.4",
+    "cbor": "^9.0.1",
     "@walletconnect/types": "^2.10.4",
     "@walletconnect/utils": "^2.10.4",
     "@walletconnect/web3wallet": "^1.9.3",

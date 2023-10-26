@@ -1,45 +1,46 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import WebAuthn from "../libs/webauthn";
+import WebAuthn, { CreateCredential, P256Credential } from "../libs/webauthn";
+import { stringify } from "@/utils/stringify";
+import { create } from "domain";
+import { Hex } from "viem";
 
 const webauthn = new WebAuthn();
 
-function arrayBufferToString(buffer: ArrayBuffer) {
-  let str = "";
-  const array = new Uint8Array(buffer);
-  for (let i = 0; i < array.length; i++) {
-    str += String.fromCharCode(array[i]);
-  }
-  return str;
-}
-
 export default function PassKey() {
   const [username, setUsername] = useState<string>("super-user");
-  const [credential, setCredential] = useState<Credential | null>(null);
-  const [clientDataJson, setClientDataJson] = useState<string | null>(null);
+  const [createCredential, setCreateCredential] = useState<{
+    rawId: Hex;
+    pubKey: CryptoKey;
+  } | null>(null);
+  const [credential, setCredential] = useState<P256Credential | null>(null);
 
   function onUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
     setUsername(event.target.value);
   }
 
   async function onCreate() {
-    setCredential(await webauthn.create({ username }));
+    let credential = await webauthn.create({ username });
+    let pubKey: CryptoKey = await crypto.subtle.importKey(
+      "spki",
+      credential?.pubKey as ArrayBuffer,
+      { name: "ECDSA", namedCurve: "P-256" },
+      true,
+      ["verify"],
+    );
+
+    console.log("PUB KEY", await crypto.subtle.exportKey("jwk", pubKey));
+
+    setCreateCredential({
+      rawId: credential?.rawId as Hex,
+      pubKey,
+    });
   }
 
   async function onGet() {
     setCredential(await webauthn.get());
   }
-
-  useEffect(() => {
-    let cred = credential as unknown as { response: { clientDataJSON: ArrayBuffer } };
-    console.log("cred", cred);
-    let clientDataJson = arrayBufferToString(cred?.response?.clientDataJSON);
-    setClientDataJson(clientDataJson);
-    let challenge = JSON.parse(JSON.stringify(clientDataJson)) as { challenge: string };
-    console.log("client data json", clientDataJson);
-    console.log("challenge", challenge?.challenge);
-  }, [credential, clientDataJson]);
 
   return (
     <>
@@ -54,11 +55,10 @@ export default function PassKey() {
         <button onClick={onCreate}>Create</button>
         <button onClick={onGet}>Get</button>
       </div>
-      {credential && (
-        <div style={{ content: "center", margin: 20 }}>
-          ClientDataJSON: {JSON.stringify(clientDataJson, null, 2)}
-        </div>
+      {createCredential && (
+        <div style={{ content: "center", margin: 20 }}>{stringify(createCredential)}</div>
       )}
+      {credential && <div style={{ content: "center", margin: 20 }}>{stringify(credential)}</div>}
     </>
   );
 }
