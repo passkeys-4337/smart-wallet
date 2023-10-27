@@ -20,19 +20,19 @@ import { WriteContractPrepared } from "../components/WriteContractPrepared";
 import SessionList from "@/components/SessionList";
 import WCInput from "@/components/WCInput";
 
-export function Page() {
+export default async function Home() {
   return (
     <Flex align="center" direction="column">
       <Box>
         <h1>wagmi + RainbowKit + Next.js</h1>
 
-        <ConnectButton />
+        {/* <ConnectButton /> */}
 
         <br />
         <WCInput />
         <SessionList />
 
-        <Connected>
+        {/* <Connected>
           <hr />
           <h2>Network</h2>
           <NetworkSwitcher />
@@ -96,10 +96,8 @@ export function Page() {
           <hr />
           <h2>Write Contract (Prepared)</h2>
           <WriteContractPrepared />
-        </Connected>
+        </Connected> */}
       </Box>
     </Flex>
   );
 }
-
-export default Page;
