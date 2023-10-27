@@ -26,7 +26,7 @@ export const WC_CONFIG: IWalletConnectConfig = {
   metadata: {
     name: "Cacao",
     description: "Cacao Wallet",
-    url: "https://walletconnect.com/",
+    url: "https://hocuspocusxyz-k7vf.vercel.app/",
     icons: ["https://avatars.githubusercontent.com/u/37784886"],
   },
 };
