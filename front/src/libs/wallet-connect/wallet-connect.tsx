@@ -13,6 +13,12 @@ import {
 } from "@/libs/wallet-connect/chains/EIP155-data";
 import { EthEvent, WCChains } from "@/libs/wallet-connect//chains/common-types";
 
+export interface IWalletConnectConfig {
+  projectId: string;
+  relayUrl?: string;
+  metadata: Web3WalletTypes.Metadata;
+}
+
 class WalletConnect extends EventEmitter {
   public sessions: Record<string, SessionTypes.Struct> = {};
   private _smartWalletAddress: string | null =
@@ -21,7 +27,26 @@ class WalletConnect extends EventEmitter {
 
   constructor() {
     super();
-    this.init();
+  }
+
+  public async init(walletConnectConfig: IWalletConnectConfig) {
+    const core = new Core({
+      projectId: walletConnectConfig.projectId,
+      // TODO: optimize relayerRegionURL base on user's location
+      // relayUrl: relayerRegionURL ?? process.env.NEXT_PUBLIC_RELAY_URL,
+    });
+
+    this._web3wallet = await Web3Wallet.init({
+      core,
+      metadata: walletConnectConfig.metadata,
+    });
+
+    if (!this._web3wallet) throw new Error("Web3Wallet is not initialized");
+
+    this._web3wallet.on("session_proposal", this._onSessionProposal);
+    this._web3wallet.on("session_request", this._onSessionRequest);
+    this._web3wallet.on("session_delete", this._onSessionDelete);
+    // this._web3wallet.on("auth_request", this._onAuthRequest);
   }
 
   public async disconnectSession(topic: string): Promise<void> {
@@ -35,7 +60,7 @@ class WalletConnect extends EventEmitter {
 
   public async extendSession(topic: string): Promise<void> {
     if (!this._web3wallet) return;
-    this._web3wallet.extendSession({
+    await this._web3wallet.extendSession({
       topic,
     });
     this._setSessions();
@@ -64,31 +89,6 @@ class WalletConnect extends EventEmitter {
     if (!this._web3wallet) return;
     await this._web3wallet.emitSessionEvent(params);
     this._setSessions();
-  }
-
-  private async init() {
-    const core = new Core({
-      projectId: process.env.PROJECT_ID,
-      // TODO: optimize relayerRegionURL base on user's location
-      // relayUrl: relayerRegionURL ?? process.env.NEXT_PUBLIC_RELAY_URL,
-    });
-
-    this._web3wallet = await Web3Wallet.init({
-      core,
-      metadata: {
-        name: "Demo app",
-        description: "Demo Client as Wallet/Peer",
-        url: "www.walletconnect.com",
-        icons: [],
-      },
-    });
-
-    if (!this._web3wallet) throw new Error("Web3Wallet is not initialized");
-
-    this._web3wallet.on("session_proposal", this._onSessionProposal);
-    this._web3wallet.on("session_request", this._onSessionRequest);
-    this._web3wallet.on("session_delete", this._onSessionDelete);
-    // this._web3wallet.on("auth_request", this._onAuthRequest);
   }
 
   private async _onSessionProposal({
@@ -145,7 +145,6 @@ class WalletConnect extends EventEmitter {
   private async _onSessionDelete(
     event: Web3WalletTypes.SessionDelete
   ): Promise<void> {
-    console.log("session delete", event);
     this._setSessions();
   }
 
