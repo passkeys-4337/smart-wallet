@@ -11,7 +11,7 @@ import { WCChains } from "./common";
 export type TEIP155Chain = keyof typeof EIP155_CHAINS;
 
 /**
- * Chains
+ * Supported Chains
  */
 export const EIP155_MAINNET_CHAINS: WCChains = {
   "eip155:1": {

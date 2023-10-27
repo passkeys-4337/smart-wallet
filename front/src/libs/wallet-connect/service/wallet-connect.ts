@@ -19,6 +19,21 @@ export interface IWalletConnectConfig {
   metadata: Web3WalletTypes.Metadata;
 }
 
+export enum WCEvent {
+  sessionChanged = "session_changed",
+  pairingApproved = "pairing_approved",
+  pairingRejected = "pairing_rejected",
+}
+
+export interface IPairingApprovedEventPayload {
+  pairingTopic: string;
+}
+
+export interface IPairingRejectedEventPayload {
+  pairingTopic: string;
+  msg: string;
+}
+
 /**
  *  WalletConnect
  * @description
@@ -28,12 +43,22 @@ export interface IWalletConnectConfig {
  * */
 class WalletConnect extends EventEmitter {
   public sessions: Record<string, SessionTypes.Struct> = {};
-  private _smartWalletAddress: string | null =
-    "0x938f169352008d35e065F153be53b3D3C07Bcd90";
-  private _web3wallet: IWeb3Wallet | null = null;
+  private _smartWalletAddress: string;
+  private _web3wallet: IWeb3Wallet | null;
+  private static _instance: WalletConnect;
 
   constructor() {
     super();
+    this.sessions = {};
+    this._smartWalletAddress = "0x938f169352008d35e065F153be53b3D3C07Bcd90";
+    this._web3wallet = null;
+  }
+
+  public static getInstance(): WalletConnect {
+    if (!this._instance) {
+      this._instance = new this();
+    }
+    return this._instance;
   }
 
   public async init(walletConnectConfig: IWalletConnectConfig) {
@@ -49,17 +74,25 @@ class WalletConnect extends EventEmitter {
     });
 
     if (!this._web3wallet) throw new Error("Web3Wallet is not initialized");
-
-    this._web3wallet.on("session_proposal", this._onSessionProposal);
-    this._web3wallet.on("session_request", this._onSessionRequest);
-    this._web3wallet.on("session_delete", this._onSessionDelete);
-    // this._web3wallet.on("auth_request", this._onAuthRequest);
-
-    console.log("WalletConnect: initialized");
-    const clientId =
-      await this._web3wallet.engine.signClient.core.crypto.getClientId();
-    console.log("WalletConnect ClientID: ", clientId);
+    this._web3wallet.on("session_proposal", (event) =>
+      this._onSessionProposal(event)
+    );
+    this._web3wallet.on("session_request", (event) =>
+      this._onSessionRequest(event)
+    );
+    this._web3wallet.on("session_delete", () => this._onSessionDelete());
     this._setSessions();
+  }
+
+  public unsubscribe(): void {
+    if (!this._web3wallet) return;
+    this._web3wallet.off("session_proposal", (event) =>
+      this._onSessionProposal(event)
+    );
+    this._web3wallet.off("session_request", (event) =>
+      this._onSessionRequest(event)
+    );
+    this._web3wallet.off("session_delete", () => this._onSessionDelete());
   }
 
   public async pair(uri: string): Promise<void> {
@@ -115,32 +148,34 @@ class WalletConnect extends EventEmitter {
     params,
   }: Web3WalletTypes.SessionProposal) {
     if (!this._web3wallet) return;
-
     try {
-      // ------- namespaces builder util ------------ //
       const approvedNamespaces = buildApprovedNamespaces({
         proposal: params,
         supportedNamespaces: {
           eip155: {
             chains: Object.keys(EIP155_CHAINS),
-            methods: Object.keys(EIP155Method),
+            methods: Object.values(EIP155Method),
             events: [EthEvent.AccountsChanged, EthEvent.ChainChanged],
             accounts: this._getAccounts(EIP155_CHAINS),
           },
         },
       });
-      // ------- end namespaces builder util ------------ //
-      console.log("approving namespaces:", approvedNamespaces);
-
       await this._web3wallet.approveSession({
         id,
         namespaces: approvedNamespaces,
+      });
+      this.emit(WCEvent.pairingApproved, {
+        pairingTopic: params.pairingTopic,
       });
       this._setSessions();
     } catch (error) {
       await this._web3wallet.rejectSession({
         id,
         reason: getSdkError("USER_REJECTED"),
+      });
+      this.emit(WCEvent.pairingRejected, {
+        pairingTopic: params.pairingTopic,
+        msg: "Session rejected: the wallet does not support the requested chain and/or rpc methods",
       });
     }
   }
@@ -150,9 +185,8 @@ class WalletConnect extends EventEmitter {
   ): Promise<void> {
     if (!this._web3wallet) return;
     const { topic, params, id } = event;
-    const { request } = params;
-    const requestParamsMessage = request.params[0];
-
+    // const { request } = params;
+    // const requestParamsMessage = request.params[0];
     // convert `requestParamsMessage` by using a method like hexToUtf8
     // const message = hexToUtf8(requestParamsMessage);
     const response = { id, result: "", jsonrpc: "2.0" };
@@ -162,34 +196,14 @@ class WalletConnect extends EventEmitter {
     });
   }
 
-  private async _onSessionDelete(
-    event: Web3WalletTypes.SessionDelete
-  ): Promise<void> {
+  private async _onSessionDelete(): Promise<void> {
     this._setSessions();
   }
 
-  // MOBILE ONLY
-  // private async _onAuthRequest(
-  //   event: Web3WalletTypes.AuthRequest
-  // ): Promise<void> {}
-
   private _setSessions(): void {
     if (!this._web3wallet) return;
-    const sessions = this._web3wallet.getActiveSessions();
-
-    this.sessions = sessions;
-
-    console.log(
-      "WalletConnect: sessions",
-      this._web3wallet.getActiveSessions()
-    );
-    console.log(
-      "WalletConnect: pairings",
-      this._web3wallet.core.pairing.getPairings()
-    );
-    // Emit an event to notify that sessions have changed
-    console.log("WalletConnect: sessions changed event emitted");
-    this.emit("sessionsChanged", this.sessions);
+    this.sessions = this._web3wallet.getActiveSessions();
+    this.emit(WCEvent.sessionChanged, this.sessions);
   }
 
   private _getAccounts(chains: WCChains): string[] {
@@ -199,64 +213,6 @@ class WalletConnect extends EventEmitter {
 
     return accounts;
   }
-
-  // FROM WALLET CONNECT EXAMPLE IF NEEDED
-
-  // async updateSignClientChainId(chainId: string, address: string) {
-  //   console.log("chainId", chainId, address);
-  //   if (!this._web3wallet) return;
-
-  //   // get most recent session
-  //   const sessions = this._web3wallet.getActiveSessions();
-  //   if (!sessions) return;
-  //   const namespace = chainId.split(":")[0];
-  //   Object.values(sessions).forEach(async (session) => {
-  //     await this._web3wallet.updateSession({
-  //       topic: session.topic,
-  //       namespaces: {
-  //         ...session.namespaces,
-  //         [namespace]: {
-  //           ...session.namespaces[namespace],
-  //           chains: [
-  //             ...new Set(
-  //               [chainId].concat(
-  //                 Array.from(session.namespaces[namespace].chains || [])
-  //               )
-  //             ),
-  //           ],
-  //           accounts: [
-  //             ...new Set(
-  //               [`${chainId}:${address}`].concat(
-  //                 Array.from(session.namespaces[namespace].accounts)
-  //               )
-  //             ),
-  //           ],
-  //         },
-  //       },
-  //     });
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //     const chainChanged = {
-  //       topic: session.topic,
-  //       event: {
-  //         name: "chainChanged",
-  //         data: parseInt(chainId.split(":")[1]),
-  //       },
-  //       chainId: chainId,
-  //     };
-
-  //     const accountsChanged = {
-  //       topic: session.topic,
-  //       event: {
-  //         name: "accountsChanged",
-  //         data: [`${chainId}:${address}`],
-  //       },
-  //       chainId,
-  //     };
-  //     await this._web3wallet.emitSessionEvent(chainChanged);
-  //     await this._web3wallet.emitSessionEvent(accountsChanged);
-  //   });
-  // }
 }
 
-export const walletConnect = new WalletConnect();
+export const walletConnect = WalletConnect.getInstance();

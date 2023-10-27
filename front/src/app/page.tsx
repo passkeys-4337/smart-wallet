@@ -26,13 +26,13 @@ export default async function Home() {
       <Box>
         <h1>wagmi + RainbowKit + Next.js</h1>
 
-        {/* <ConnectButton /> */}
+        <ConnectButton />
 
         <br />
         <WCInput />
         <SessionList />
 
-        {/* <Connected>
+        <Connected>
           <hr />
           <h2>Network</h2>
           <NetworkSwitcher />
@@ -96,7 +96,7 @@ export default async function Home() {
           <hr />
           <h2>Write Contract (Prepared)</h2>
           <WriteContractPrepared />
-        </Connected> */}
+        </Connected>
       </Box>
     </Flex>
   );

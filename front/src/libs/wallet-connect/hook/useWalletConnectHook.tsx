@@ -1,5 +1,10 @@
 import { useEffect, useReducer, useState } from "react";
-import { walletConnect } from "../service/wallet-connect";
+import {
+  IPairingApprovedEventPayload,
+  IPairingRejectedEventPayload,
+  WCEvent,
+  walletConnect,
+} from "../service/wallet-connect";
 import { SessionTypes } from "@walletconnect/types";
 import { WC_CONFIG } from "../config";
 
@@ -22,7 +27,7 @@ interface IWCReactSessions {
 }
 
 interface IPairingState {
-  uri: string;
+  pairingTopic: string;
   isLoading: boolean;
   error: Error | null;
 }
@@ -126,7 +131,6 @@ export function useWalletConnectHook() {
   const [pairingState, setPairingState] = useState<
     Record<string, IPairingState>
   >({});
-
   const [sessions, dispatch] = useReducer(reducer, {});
 
   useEffect(() => {
@@ -142,45 +146,90 @@ export function useWalletConnectHook() {
       }
     }
     init();
+    return () => {
+      walletConnect.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
-    console.log("useWalletConnect: first render");
     const handleSessionsChanged = (newSessions: ISessions) => {
       dispatch({ type: "SET_SESSIONS", sessions: newSessions });
     };
-    walletConnect.on("sessionsChanged", handleSessionsChanged);
-    return () => {
-      walletConnect.removeListener("sessionsChanged", handleSessionsChanged);
-    };
-  }, []);
-
-  async function pairSession(uri: string) {
-    setPairingState((prev) => ({
-      ...prev,
-      [uri]: {
-        uri,
-        isLoading: true,
-        error: null,
-      },
-    }));
-    try {
-      await walletConnect.pair(uri);
+    const handlePairingApproved = ({
+      pairingTopic,
+    }: IPairingApprovedEventPayload) => {
       setPairingState((prev) => ({
         ...prev,
-        [uri]: {
-          uri,
+        [pairingTopic]: {
+          pairingTopic,
           isLoading: false,
           error: null,
         },
       }));
+    };
+    const handlePairingRejected = ({
+      pairingTopic,
+      msg,
+    }: IPairingRejectedEventPayload) => {
+      setPairingState((prev) => ({
+        ...prev,
+        [pairingTopic]: {
+          pairingTopic,
+          isLoading: false,
+          error: new Error(msg),
+        },
+      }));
+    };
+    walletConnect.on(WCEvent.sessionChanged, handleSessionsChanged);
+    walletConnect.on(WCEvent.pairingApproved, handlePairingApproved);
+    walletConnect.on(WCEvent.pairingRejected, handlePairingRejected);
+    return () => {
+      walletConnect.removeListener(
+        WCEvent.sessionChanged,
+        handleSessionsChanged
+      );
+      walletConnect.removeListener(
+        WCEvent.pairingApproved,
+        handlePairingApproved
+      );
+      walletConnect.removeListener(
+        WCEvent.pairingRejected,
+        handlePairingRejected
+      );
+    };
+  }, []);
+
+  async function pairSession(uri: string) {
+    let pairingTopic = "";
+    try {
+      pairingTopic = uri.split("@")[0].split(":")[1];
+      setPairingState((prev) => ({
+        ...prev,
+        [pairingTopic]: {
+          pairingTopic,
+          isLoading: true,
+          error: null,
+        },
+      }));
+
+      await walletConnect.pair(uri);
+      setTimeout(() => {
+        setPairingState((prev) => ({
+          ...prev,
+          [pairingTopic]: {
+            pairingTopic,
+            isLoading: false,
+            error: null,
+          },
+        }));
+      }, 5000);
     } catch (error: any) {
       setPairingState((prev) => ({
         ...prev,
-        [uri]: {
-          uri,
+        [pairingTopic]: {
+          pairingTopic,
           isLoading: false,
-          error,
+          error: error,
         },
       }));
     }

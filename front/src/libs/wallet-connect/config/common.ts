@@ -22,7 +22,7 @@ export const ALL_CHAINS: WCChains = {
 };
 
 export const WC_CONFIG: IWalletConnectConfig = {
-  projectId: "658777a4b5a4139c881ecbee9e123d86",
+  projectId: "e8a450d0a41ce09a38c37ed5c6df736b",
   metadata: {
     name: "Cacao",
     description: "Cacao Wallet",
