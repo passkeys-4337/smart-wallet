@@ -176,9 +176,17 @@ class WalletConnect extends EventEmitter {
   private _setSessions(): void {
     if (!this._web3wallet) return;
     const sessions = this._web3wallet.getActiveSessions();
-    console.log("WalletConnect: sessions set", sessions);
+
     this.sessions = sessions;
 
+    console.log(
+      "WalletConnect: sessions",
+      this._web3wallet.getActiveSessions()
+    );
+    console.log(
+      "WalletConnect: pairings",
+      this._web3wallet.core.pairing.getPairings()
+    );
     // Emit an event to notify that sessions have changed
     console.log("WalletConnect: sessions changed event emitted");
     this.emit("sessionsChanged", this.sessions);
