@@ -8,15 +8,15 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   [publicProvider()]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "My wagmi + RainbowKit App",
-  chains,
-  projectId: "658777a4b5a4139c881ecbee9e123d86",
-});
+// const { connectors } = getDefaultWallets({
+//   appName: "My wagmi + RainbowKit App",
+//   chains,
+//   projectId: "658777a4b5a4139c881ecbee9e123d86",
+// });
 
 export const config = createConfig({
   autoConnect: true,
-  connectors,
+  //connectors,
   publicClient,
   webSocketPublicClient,
 });

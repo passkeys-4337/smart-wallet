@@ -10,8 +10,8 @@ import { SessionTypes } from "@walletconnect/types";
 import {
   EIP155_CHAINS,
   EIP155Method,
-} from "@/libs/wallet-connect/chains/EIP155-data";
-import { EthEvent, WCChains } from "@/libs/wallet-connect//chains/common-types";
+} from "@/libs/wallet-connect/config/EIP155";
+import { EthEvent, WCChains } from "@/libs/wallet-connect/config/common";
 
 export interface IWalletConnectConfig {
   projectId: string;
@@ -19,6 +19,13 @@ export interface IWalletConnectConfig {
   metadata: Web3WalletTypes.Metadata;
 }
 
+/**
+ *  WalletConnect
+ * @description
+ * WalletConnect is a singleton class that manages the connection to the WalletConnect service.
+ * It is responsible for initializing the connection, handling events, and managing sessions.
+ *
+ * */
 class WalletConnect extends EventEmitter {
   public sessions: Record<string, SessionTypes.Struct> = {};
   private _smartWalletAddress: string | null =
@@ -47,6 +54,18 @@ class WalletConnect extends EventEmitter {
     this._web3wallet.on("session_request", this._onSessionRequest);
     this._web3wallet.on("session_delete", this._onSessionDelete);
     // this._web3wallet.on("auth_request", this._onAuthRequest);
+
+    console.log("WalletConnect: initialized");
+    const clientId =
+      await this._web3wallet.engine.signClient.core.crypto.getClientId();
+    console.log("WalletConnect ClientID: ", clientId);
+    this._setSessions();
+  }
+
+  public async pair(uri: string): Promise<void> {
+    if (!this._web3wallet) return;
+    await this._web3wallet.pair({ uri });
+    this._setSessions();
   }
 
   public async disconnectSession(topic: string): Promise<void> {
@@ -111,8 +130,9 @@ class WalletConnect extends EventEmitter {
         },
       });
       // ------- end namespaces builder util ------------ //
+      console.log("approving namespaces:", approvedNamespaces);
 
-      const session = await this._web3wallet.approveSession({
+      await this._web3wallet.approveSession({
         id,
         namespaces: approvedNamespaces,
       });
@@ -156,9 +176,11 @@ class WalletConnect extends EventEmitter {
   private _setSessions(): void {
     if (!this._web3wallet) return;
     const sessions = this._web3wallet.getActiveSessions();
+    console.log("WalletConnect: sessions set", sessions);
     this.sessions = sessions;
 
     // Emit an event to notify that sessions have changed
+    console.log("WalletConnect: sessions changed event emitted");
     this.emit("sessionsChanged", this.sessions);
   }
 

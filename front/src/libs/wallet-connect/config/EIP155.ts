@@ -3,7 +3,7 @@
  * @url https://chainlist.org
  */
 
-import { WCChains } from "./common-types";
+import { WCChains } from "./common";
 
 /**
  * Types
