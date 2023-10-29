@@ -17,14 +17,20 @@ import { WatchContractEvents } from "../components/WatchContractEvents";
 import { WatchPendingTransactions } from "../components/WatchPendingTransactions";
 import { WriteContract } from "../components/WriteContract";
 import { WriteContractPrepared } from "../components/WriteContractPrepared";
+import SessionList from "@/components/SessionList";
+import WCInput from "@/components/WCInput";
 
-export function Page() {
+export default async function Home() {
   return (
     <Flex align="center" direction="column">
       <Box>
         <h1>wagmi + RainbowKit + Next.js</h1>
 
         <ConnectButton />
+
+        <br />
+        <WCInput />
+        <SessionList />
 
         <Connected>
           <hr />
@@ -95,5 +101,3 @@ export function Page() {
     </Flex>
   );
 }
-
-export default Page;
