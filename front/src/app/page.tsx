@@ -5,6 +5,7 @@ import { BlockNumber } from "../components/BlockNumber";
 import { ConnectButton } from "../components/ConnectButton";
 import { Connected } from "../components/Connected";
 import { NetworkSwitcher } from "../components/NetworkSwitcher";
+import PassKey from "../components/PassKey";
 import { ReadContract } from "../components/ReadContract";
 import { ReadContracts } from "../components/ReadContracts";
 import { ReadContractsInfinite } from "../components/ReadContractsInfinite";
@@ -31,6 +32,7 @@ export default async function Home() {
         <br />
         <WCInput />
         <SessionList />
+        <PassKey />
 
         <Connected>
           <hr />
