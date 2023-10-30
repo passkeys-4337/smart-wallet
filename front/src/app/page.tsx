@@ -5,7 +5,7 @@ import { BlockNumber } from "../components/BlockNumber";
 import { ConnectButton } from "../components/ConnectButton";
 import { Connected } from "../components/Connected";
 import { NetworkSwitcher } from "../components/NetworkSwitcher";
-import PassKey from '../components/PassKey'
+import PassKey from "../components/PassKey";
 import { ReadContract } from "../components/ReadContract";
 import { ReadContracts } from "../components/ReadContracts";
 import { ReadContractsInfinite } from "../components/ReadContractsInfinite";
@@ -28,11 +28,11 @@ export default async function Home() {
         <h1>wagmi + RainbowKit + Next.js</h1>
 
         <ConnectButton />
-      <PassKey />
 
         <br />
         <WCInput />
         <SessionList />
+        <PassKey />
 
         <Connected>
           <hr />

@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import WebAuthn, { CreateCredential, P256Credential } from "../libs/webauthn";
+import { useState } from "react";
+import { WebAuthn, P256Credential } from "../libs/webauthn";
 import { stringify } from "@/utils/stringify";
-import { create } from "domain";
 import { Hex } from "viem";
 
 const webauthn = new WebAuthn();
 
 export default function PassKey() {
-  const [username, setUsername] = useState<string>("super-user");
+  const [username, setUsername] = useState<string>("");
   const [createCredential, setCreateCredential] = useState<{
     rawId: Hex;
-    pubKey: CryptoKey;
+    pubKey: {
+      x: Hex;
+      y: Hex;
+    };
   } | null>(null);
   const [credential, setCredential] = useState<P256Credential | null>(null);
 
@@ -22,19 +24,10 @@ export default function PassKey() {
 
   async function onCreate() {
     let credential = await webauthn.create({ username });
-    let pubKey: CryptoKey = await crypto.subtle.importKey(
-      "spki",
-      credential?.pubKey as ArrayBuffer,
-      { name: "ECDSA", namedCurve: "P-256" },
-      true,
-      ["verify"],
-    );
-
-    console.log("PUB KEY", await crypto.subtle.exportKey("jwk", pubKey));
 
     setCreateCredential({
       rawId: credential?.rawId as Hex,
-      pubKey,
+      pubKey: credential?.pubKey as { x: Hex; y: Hex },
     });
   }
 
@@ -44,11 +37,12 @@ export default function PassKey() {
 
   return (
     <>
+      <h3>PassKey</h3>
       <div style={{ content: "center", margin: 20 }}>
         <input
-          type="outlined"
+          type="text"
           name="username"
-          autoComplete="webauthn"
+          autoComplete="username webauthn"
           value={username}
           onChange={onUsernameChange}
         />

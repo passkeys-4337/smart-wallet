@@ -11,9 +11,12 @@ contract Enum {
 }
 
 interface GnosisSafe {
-    function execTransactionFromModule(address to, uint256 value, bytes calldata data, Enum.Operation operation)
-        external
-        returns (bool success);
+    function execTransactionFromModule(
+        address to,
+        uint256 value,
+        bytes calldata data,
+        Enum.Operation operation
+    ) external returns (bool success);
 }
 
 struct WebAuthnArgs {
@@ -58,7 +61,10 @@ contract WebAuthnModule {
 
         require(ret, "WebAuthnModule: invalid signature");
 
-        require(safe.execTransactionFromModule(to, value, data, operation), "Module transaction failed");
+        require(
+            safe.execTransactionFromModule(to, value, data, operation),
+            "Module transaction failed"
+        );
 
         return true;
     }
