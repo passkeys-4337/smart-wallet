@@ -1,12 +1,12 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "@radix-ui/themes/styles.css";
-import { Providers } from "./providers";
 import { Theme, ThemePanel } from "@radix-ui/themes";
 import ThemeProvider from "@/components/ThemeProvider.tsx";
 import { WalletConnectProvider } from "@/libs/wallet-connect";
+import { SmartWalletProvider } from "@/libs/smart-wallet/SmartWalletProvider";
 
 export const metadata = {
-  title: "wagmi",
+  title: "HocusPocus XYZ",
 };
 
 export default function RootLayout({
@@ -17,14 +17,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <WalletConnectProvider>
-          <ThemeProvider attribute="class">
-            <Theme>
-              <Providers>{children}</Providers>
-              {/* <ThemePanel /> */}
-            </Theme>
-          </ThemeProvider>
-        </WalletConnectProvider>
+        <SmartWalletProvider>
+          <WalletConnectProvider>
+            <ThemeProvider attribute="class">
+              <Theme>
+                {children}
+                {/* <ThemePanel /> */}
+              </Theme>
+            </ThemeProvider>
+          </WalletConnectProvider>
+        </SmartWalletProvider>
       </body>
     </html>
   );
