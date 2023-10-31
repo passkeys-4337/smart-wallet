@@ -1,31 +1,31 @@
-'use client'
+"use client";
 
-import { parseEther } from 'viem'
-import { useSendTransaction, useWaitForTransaction } from 'wagmi'
+import { parseEther } from "viem";
+import { useSendTransaction, useWaitForTransaction } from "wagmi";
 
-import { stringify } from '../utils/stringify'
+import { stringify } from "../utils/stringify";
 
 export function SendTransaction() {
   const { data, error, isLoading, isError, sendTransaction } =
-    useSendTransaction()
+    useSendTransaction();
   const {
     data: receipt,
     isLoading: isPending,
     isSuccess,
-  } = useWaitForTransaction({ hash: data?.hash })
+  } = useWaitForTransaction({ hash: data?.hash });
 
   return (
     <>
       <form
         onSubmit={(e) => {
-          e.preventDefault()
-          const formData = new FormData(e.target as HTMLFormElement)
-          const address = formData.get('address') as string
-          const value = formData.get('value') as `${number}`
+          e.preventDefault();
+          const formData = new FormData(e.target as HTMLFormElement);
+          const address = formData.get("address") as string;
+          const value = formData.get("value") as `${number}`;
           sendTransaction({
             to: address,
             value: parseEther(value),
-          })
+          });
         }}
       >
         <input name="address" placeholder="address" />
@@ -45,5 +45,5 @@ export function SendTransaction() {
       )}
       {isError && <div>Error: {error?.message}</div>}
     </>
-  )
+  );
 }

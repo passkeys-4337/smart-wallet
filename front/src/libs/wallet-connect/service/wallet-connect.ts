@@ -12,6 +12,7 @@ import {
   EIP155Method,
 } from "@/libs/wallet-connect/config/EIP155";
 import { EthEvent, WCChains } from "@/libs/wallet-connect/config/common";
+import { smartWallet } from "@/libs/smart-wallet/service/smart-wallet";
 
 export interface IWalletConnectConfig {
   projectId: string;
@@ -148,6 +149,7 @@ class WalletConnect extends EventEmitter {
     params,
   }: Web3WalletTypes.SessionProposal) {
     if (!this._web3wallet) return;
+
     try {
       const approvedNamespaces = buildApprovedNamespaces({
         proposal: params,
@@ -185,11 +187,14 @@ class WalletConnect extends EventEmitter {
   ): Promise<void> {
     if (!this._web3wallet) return;
     const { topic, params, id } = event;
+    const { request } = params;
+    const result = this._jsonRpcEventRouter(request.method, request.params);
+
     // const { request } = params;
     // const requestParamsMessage = request.params[0];
     // convert `requestParamsMessage` by using a method like hexToUtf8
     // const message = hexToUtf8(requestParamsMessage);
-    const response = { id, result: "", jsonrpc: "2.0" };
+    const response = { id, result, jsonrpc: "2.0" };
     await this._web3wallet.respondSessionRequest({
       topic,
       response,
@@ -212,6 +217,28 @@ class WalletConnect extends EventEmitter {
     });
 
     return accounts;
+  }
+
+  private _jsonRpcEventRouter(method: string, params: any) {
+    switch (method) {
+      // case EIP155Method.EthSign:
+      // case EIP155Method.PersonalSign:
+      // // smartWallet.getIsValidSignature(params);
+
+      // case EIP155Method.SignTypedData:
+      // case EIP155Method.SignTypedDataV3:
+      // case EIP155Method.SignTypedDataV4:
+      // // do something
+
+      case EIP155Method.EthSendTransaction:
+        // case EIP155Method.EthSendRawTransaction:
+        // case EIP155Method.EthSignTransaction:
+        return smartWallet.sendUserOperation(params);
+
+      default:
+        // do something
+        return null;
+    }
   }
 }
 
