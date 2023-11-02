@@ -73,7 +73,10 @@ export class WebAuthn {
   async get(): Promise<P256Credential | null> {
     const options: PublicKeyCredentialRequestOptions = {
       timeout: 60000,
-      challenge: Uint8Array.from("random-challenge", (c) => c.charCodeAt(0)),
+      challenge: Buffer.from(
+        "010000000000007b3ae99bbc71fbac65fa6e95aeb48fc586d2a46d0381ff9b1110b2a0fa1ca0a4",
+        "hex",
+      ),
       rpId: "localhost",
       userVerification: "required",
       mediation: "conditional",
