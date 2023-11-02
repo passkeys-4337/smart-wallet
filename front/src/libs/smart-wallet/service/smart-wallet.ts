@@ -1,12 +1,5 @@
-import {
-  createClient,
-  Client,
-  fallback,
-  Chain,
-  Transport,
-  createPublicClient,
-} from "viem";
-import { mainnet } from "viem/chains";
+import { createClient, Client, fallback, Chain, Transport, createPublicClient } from "viem";
+import { baseGoerli } from "viem/chains";
 import { SmartWalletActions, smartWalletActions } from "./decorators";
 import { Prettify } from "viem/_types/types/utils";
 import { transport } from "../config";
@@ -14,7 +7,7 @@ import { PublicClient } from "wagmi";
 
 type SmartWalletClient<
   transport extends Transport = Transport,
-  chain extends Chain | undefined = Chain | undefined
+  chain extends Chain | undefined = Chain | undefined,
 > = Client<transport, chain, undefined, any, SmartWalletActions> & PublicClient;
 
 class SmartWallet {
@@ -24,7 +17,7 @@ class SmartWallet {
 
   constructor() {
     this._client = createPublicClient({
-      chain: mainnet,
+      chain: baseGoerli,
       transport,
     }).extend(smartWalletActions);
   }
@@ -47,12 +40,12 @@ class SmartWallet {
 
   public get client() {
     console.warn(
-      "smartWallet: isInit() is not called. Only use this getter if you want to access wagmi publicClient method."
+      "smartWallet: isInit() is not called. Only use this getter if you want to access wagmi publicClient method.",
     );
     return this._client;
   }
 
-  public async sendUserOperation(args: any) {
+  public async sendUserOperation(args: any): Promise<`0x${string}`> {
     this._isInit();
     return await this._client.sendUserOperation({
       from: this._address,
@@ -60,7 +53,7 @@ class SmartWallet {
     });
   }
 
-  public async estimateUserOperationGas(args: any) {
+  public async estimateUserOperationGas(args: any): Promise<bigint> {
     this._isInit();
     return await this._client.estimateUserOperationGas({
       from: this._address,
@@ -68,7 +61,7 @@ class SmartWallet {
     });
   }
 
-  public async getUserOperationReceipt(args: any) {
+  public async getUserOperationReceipt(args: any): Promise<`0x${string}`> {
     this._isInit();
     return await this._client.getUserOperationReceipt({
       from: this._address,
@@ -76,7 +69,7 @@ class SmartWallet {
     });
   }
 
-  public async getIsValidSignature(args: any) {
+  public async getIsValidSignature(args: any): Promise<boolean> {
     this._isInit();
     return await this._client.getIsValidSignature({
       from: this._address,

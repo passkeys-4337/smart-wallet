@@ -62,6 +62,8 @@ contract SendUserOpTest is Test {
             expectedUserOpHash
         );
 
+        console2.logBytes(challengeToSign);
+
         bytes memory ownerSig = abi.encodePacked(
             version,
             validUntil,
@@ -73,6 +75,8 @@ contract SendUserOpTest is Test {
                 })
             )
         );
+
+        console2.logBytes(ownerSig);
 
         uint256 salt = 123;
 

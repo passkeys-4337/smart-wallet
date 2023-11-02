@@ -1,6 +1,9 @@
 import { fallback, http } from "viem";
 
-const alchemy = http("https://eth-mainnet.g.alchemy.com/v2/...");
-const infura = http("https://mainnet.infura.io/v3/...");
+const publicRpc = http("https://goerli.base.org");
+const localhost = http("http://localhost:8545");
+const stackUpBundlerRpcUrl = http(
+  `https://api.stackup.sh/v1/node/${process.env.STACKUP_BUNDLER_API_KEY}`,
+);
 
-export const transport = fallback([alchemy, infura]);
+export const transport = stackUpBundlerRpcUrl;
