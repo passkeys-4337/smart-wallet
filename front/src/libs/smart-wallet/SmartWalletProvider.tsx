@@ -12,7 +12,7 @@ export const useWalletConnect = (): UseSmartWallet => {
   const context = useContext(SmartWalletContext);
   if (!context) {
     throw new Error(
-      "useSmartWalletHook must be used within a WalletConnectProvider"
+      "useSmartWalletHook must be used within a SmartWalletProvider"
     );
   }
   return context;

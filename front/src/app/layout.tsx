@@ -1,19 +1,16 @@
-import "@rainbow-me/rainbowkit/styles.css";
 import "@radix-ui/themes/styles.css";
+import "./globals.css";
 import { Theme, ThemePanel } from "@radix-ui/themes";
-import ThemeProvider from "@/components/ThemeProvider.tsx";
+import ThemeProvider from "@/providers/ThemeProvider";
 import { WalletConnectProvider } from "@/libs/wallet-connect";
 import { SmartWalletProvider } from "@/libs/smart-wallet/SmartWalletProvider";
+import { ModalProvider } from "@/providers/ModalProvider";
 
 export const metadata = {
   title: "HocusPocus XYZ",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
@@ -21,7 +18,7 @@ export default function RootLayout({
           <WalletConnectProvider>
             <ThemeProvider attribute="class">
               <Theme>
-                {children}
+                <ModalProvider>{children}</ModalProvider>
                 {/* <ThemePanel /> */}
               </Theme>
             </ThemeProvider>

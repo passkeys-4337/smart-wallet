@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  overflow-x: hidden;
+  background-color: #696E77;
+
+}
+
+body {
+  position: relative;
+  max-width: 390px;
+  min-height: 100svh;
+  margin: 0 auto; 
+  overflow: hidden;
+
+}
+
+@media (min-width: 391px) {
+  body {
+    margin: 20px auto;
+    border-radius: 20px;
+    min-height: calc(100svh - 40px);
+    overflow: hidden;
+    
+  }
+}
