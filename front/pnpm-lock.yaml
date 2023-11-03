@@ -25,7 +25,7 @@ dependencies:
     version: 2.0.0(@types/react-dom@18.2.14)(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)
   '@rainbow-me/rainbowkit':
     specifier: ^1.0.0
-    version: 1.1.3(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)(viem@0.3.50)(wagmi@1.4.5)
+    version: 1.1.3(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)(viem@1.18.0)(wagmi@1.4.5)
   '@simplewebauthn/browser':
     specifier: ^8.3.3
     version: 8.3.3
@@ -47,9 +47,6 @@ dependencies:
   '@walletconnect/web3wallet':
     specifier: ^1.9.3
     version: 1.9.3(lokijs@1.5.12)
-  base64url:
-    specifier: ^3.0.1
-    version: 3.0.1
   cbor:
     specifier: ^9.0.1
     version: 9.0.1
@@ -3298,11 +3295,6 @@ packages:
 
   /base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
-    dev: false
-
-  /base64url@3.0.1:
-    resolution: {integrity: sha512-ir1UPr3dkwexU7FdV8qBBbNDRUhMmIekYMFZfi+C/sLNnRESKPl23nB9b2pltqfOQNnGzsDdId90AEtG5tCx4A==}
-    engines: {node: '>=6.0.0'}
     dev: false
 
   /bigint-buffer@1.1.5:
