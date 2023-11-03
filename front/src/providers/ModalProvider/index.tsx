@@ -10,6 +10,9 @@ const PortalContainer = styled(Portal)<{ isOpen: Boolean }>`
   left: 0;
   width: 100%;
   height: 100svh;
+  @media (min-width: 391px) {
+    height: calc(100vh - 40px);
+  }
   pointer-events: ${({ isOpen }) => (isOpen ? "auto" : "none")};
 `;
 
@@ -32,8 +35,8 @@ const Overlay = styled.div<{ isOpen: Boolean }>`
   top: 0;
   left: 0;
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
-  backdrop-filter: blur(1.5px);
-  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  // background-color: rgba(var(--color-selection-root), 0.5);
   width: 100%;
   height: 100svh;
   @media (min-width: 391px) {
