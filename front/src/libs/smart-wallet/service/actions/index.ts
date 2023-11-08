@@ -4,6 +4,7 @@ import {
   Chain,
   Client,
   Hash,
+  Hex,
   RpcTransactionRequest,
   encodeAbiParameters,
   encodePacked,
@@ -14,17 +15,14 @@ export type SendUserOperationReturnType = Hash;
 
 export async function sendUserOperation(
   client: Client,
-  args: any,
+  args: { to: Hex; value: bigint },
 ): Promise<SendUserOperationReturnType> {
   const builder = new UserOpBuilder(client.chain as Chain);
 
-  console.log("builder", builder);
   const { userOp, msgToSign } = await builder.buildUserOp({
-    to: "0x061060a65146b3265C62fC8f3AE977c9B27260fF",
-    value: BigInt(0),
+    to: args.to,
+    value: args.value,
   });
-
-  console.log("msgToSign", msgToSign);
 
   const credentials: P256Credential = (await new WebAuthn().get(msgToSign)) as P256Credential;
 
@@ -45,7 +43,7 @@ export async function sendUserOperation(
               },
               {
                 name: "clientDataJSON",
-                type: "bytes",
+                type: "string",
               },
               {
                 name: "challengeLocation",
@@ -69,7 +67,7 @@ export async function sendUserOperation(
         [
           {
             authenticatorData: credentials.authenticatorData,
-            clientDataJSON: encodePacked(["string"], [JSON.stringify(credentials.clientData)]),
+            clientDataJSON: JSON.stringify(credentials.clientData),
             challengeLocation: BigInt(23),
             responseTypeLocation: BigInt(1),
             r: credentials.signature.r,
@@ -80,10 +78,7 @@ export async function sendUserOperation(
     ],
   );
 
-  console.log("signatureUserOp", signatureUserOp);
-
   const userOpAsParams = builder.toParams({ ...userOp, signature: signatureUserOp });
-  console.log("userOpAsParams", userOpAsParams);
 
   return await client.request({
     method: "eth_sendUserOperation" as any,

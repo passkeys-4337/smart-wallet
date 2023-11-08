@@ -34,7 +34,7 @@ export default function PassKey() {
   async function onGet() {
     setCredential(
       await webauthn.get(
-        "0x010000000000007b3ae99bbc71fbac65fa6e95aeb48fc586d2a46d0381ff9b1110b2a0fa1ca0a4",
+        `0x01000000000000${"ed8154bc00355192a1f1f3a21ec5442bd05e3bb1c0c6ab089d6e138f88125d6a"}`,
       ),
     );
   }

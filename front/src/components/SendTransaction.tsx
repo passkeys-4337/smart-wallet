@@ -27,25 +27,10 @@ export function SendTransaction() {
           const formData = new FormData(e.target as HTMLFormElement);
           const address = formData.get("address") as Hex;
           const value = formData.get("value") as `${number}`;
-          // sendTransaction({
-          //   to: address,
-          //   value: parseEther(value),
-          // });
-
-          // builder.buildUserOp({
-          //   to: "0x061060a65146b3265C62fC8f3AE977c9B27260fF",
-          //   value: BigInt(0),
-          // });
-          // const { userOp, userOpHash } = await builder.buildUserOp({
-          //   to: "0x061060a65146b3265C62fC8f3AE977c9B27260fF",
-          //   value: BigInt(0),
-          // });
-
-          // console.log("djshcds", builder.toParams(userOp));
 
           const res = await smartWallet.client.sendUserOperation({
-            to: "0x061060a65146b3265C62fC8f3AE977c9B27260fF",
-            value: BigInt(0),
+            to: address ?? "0x1878EA9134D500A3cEF3E89589ECA3656EECf48f",
+            value: value ?? BigInt(11),
           });
 
           console.log("res", res);

@@ -20,6 +20,7 @@ library Utils {
                 '","origin":"http://localhost:3000","crossOrigin":false}'
             )
         );
+
         uint256 challengeLocation = 23;
         uint256 responseTypeLocation = 1;
 

@@ -105,7 +105,12 @@ export class WebAuthn {
 
     return {
       rawId: toHex(new Uint8Array(cred.rawId)),
-      clientData: clientDataObj,
+      clientData: {
+        type: clientDataObj.type,
+        challenge: clientDataObj.challenge,
+        origin: clientDataObj.origin,
+        crossOrigin: clientDataObj.crossOrigin,
+      },
       authenticatorData,
       signature,
     };
