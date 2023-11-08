@@ -70,13 +70,10 @@ export class WebAuthn {
     };
   }
 
-  async get(): Promise<P256Credential | null> {
+  async get(challenge: Hex): Promise<P256Credential | null> {
     const options: PublicKeyCredentialRequestOptions = {
       timeout: 60000,
-      challenge: Buffer.from(
-        "010000000000007b3ae99bbc71fbac65fa6e95aeb48fc586d2a46d0381ff9b1110b2a0fa1ca0a4",
-        "hex",
-      ),
+      challenge: Buffer.from(challenge.slice(2), "hex"),
       rpId: "localhost",
       userVerification: "required",
       mediation: "conditional",
@@ -108,7 +105,12 @@ export class WebAuthn {
 
     return {
       rawId: toHex(new Uint8Array(cred.rawId)),
-      clientData: clientDataObj,
+      clientData: {
+        type: clientDataObj.type,
+        challenge: clientDataObj.challenge,
+        origin: clientDataObj.origin,
+        crossOrigin: clientDataObj.crossOrigin,
+      },
       authenticatorData,
       signature,
     };

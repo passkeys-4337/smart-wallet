@@ -19,13 +19,13 @@ struct Signature {
     uint256 s;
 }
 
-contract SimpleAccount is IAccount, UUPSUpgradeable, Initializable, IERC1271 {
-    struct Call {
-        address dest;
-        uint256 value;
-        bytes data;
-    }
+struct Call {
+    address dest;
+    uint256 value;
+    bytes data;
+}
 
+contract SimpleAccount is IAccount, UUPSUpgradeable, Initializable, IERC1271 {
     struct PublicKey {
         bytes32 X;
         bytes32 Y;
