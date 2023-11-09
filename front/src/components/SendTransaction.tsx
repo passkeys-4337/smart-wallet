@@ -8,32 +8,38 @@ import { UserOpBuilder } from "@/libs/smart-wallet/service/userOps";
 import { baseGoerli } from "viem/chains";
 import { SmartWalletProvider } from "@/libs/smart-wallet/SmartWalletProvider";
 import { smartWallet } from "@/libs/smart-wallet";
+import { useState } from "react";
+import { Link } from "@radix-ui/themes";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const builder = new UserOpBuilder(baseGoerli);
+smartWallet.init();
 
 export function SendTransaction() {
-  const { data, error, isLoading, isError, sendTransaction } = useSendTransaction();
-  const {
-    data: receipt,
-    isLoading: isPending,
-    isSuccess,
-  } = useWaitForTransaction({ hash: data?.hash });
+  const [txReceipt, setTxReceipt] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
       <form
         onSubmit={async (e) => {
+          setIsLoading(true);
           e.preventDefault();
           const formData = new FormData(e.target as HTMLFormElement);
-          const address = formData.get("address") as Hex;
-          const value = formData.get("value") as `${number}`;
+          const address = formData?.get("address") as Hex;
+          const value = formData?.get("value") as `${number}`;
 
-          const res = await smartWallet.client.sendUserOperation({
-            to: address ?? "0x1878EA9134D500A3cEF3E89589ECA3656EECf48f",
-            value: value ?? BigInt(11),
+          const hash = await smartWallet.sendUserOperation({
+            to: address || "0x1878EA9134D500A3cEF3E89589ECA3656EECf48f",
+            value: value || BigInt(11),
           });
 
-          console.log("res", res);
+          console.log("hash", hash);
+          const receipt = await smartWallet.waitForUserOperationReceipt({ hash });
+          setTxReceipt(receipt);
+
+          console.log("receipt", receipt);
+          setIsLoading(false);
         }}
       >
         <input name="address" placeholder="address" />
@@ -41,17 +47,16 @@ export function SendTransaction() {
         <button type="submit">Send</button>
       </form>
 
-      {isLoading && <div>Check wallet...</div>}
-      {isPending && <div>Transaction pending...</div>}
-      {isSuccess && (
-        <>
-          <div>Transaction Hash: {data?.hash}</div>
-          <div>
-            Transaction Receipt: <pre>{stringify(receipt, null, 2)}</pre>
-          </div>
-        </>
+      {isLoading && <LoadingSpinner />}
+
+      {txReceipt && !isLoading && (
+        <Link
+          href={`https://goerli.basescan.org/tx/${txReceipt.receipt.transactionHash}`}
+          target="_blank"
+        >
+          Tx Link
+        </Link>
       )}
-      {isError && <div>Error: {error?.message}</div>}
     </>
   );
 }

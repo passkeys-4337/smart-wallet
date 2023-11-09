@@ -7,22 +7,18 @@ import {
   WalletClient,
   createPublicClient,
   createWalletClient,
-  encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
   getContract,
   http,
-  keccak256,
   parseAbi,
+  formatEther,
   toHex,
+  encodeAbiParameters,
 } from "viem";
 import factoryJSON from "@/abis/factory.json";
-import {
-  DEFAULT_USER_OP,
-  DEFAULT_VERIFICATION_GAS_LIMIT,
-  ZERO_ADDRESS,
-} from "@/libs/smart-wallet/service/userOps/constants";
-import { Utils } from "userop";
+import { DEFAULT_USER_OP, ZERO_ADDRESS } from "@/libs/smart-wallet/service/userOps/constants";
+import { P256Credential, WebAuthn } from "@/libs/webauthn";
 
 const factoryAbi = [...factoryJSON.abi] as const;
 
@@ -58,10 +54,14 @@ export class UserOpBuilder {
   async buildUserOp({
     to,
     value,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
   }: {
     to: Hex;
     value: bigint;
-  }): Promise<{ userOp: UserOperation; msgToSign: Hex }> {
+    maxFeePerGas: bigint;
+    maxPriorityFeePerGas: bigint;
+  }): Promise<UserOperation> {
     // calculate smart wallet address via Factory contract
     const sender = await this._calculateSmartWalletAddress();
 
@@ -81,12 +81,25 @@ export class UserOpBuilder {
     // calculate nonce
     const nonce = await this._getNonce(sender);
 
+    console.log(
+      "multiply",
+      formatEther(
+        maxFeePerGas * (BigInt(97655) + BigInt(initCodeGas) + BigInt(57705) + BigInt(18286)),
+      ),
+    );
+
     // create user operation
     const userOp: UserOperation = {
       ...DEFAULT_USER_OP,
       sender,
       nonce,
       initCode,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+      callGasLimit: BigInt(18286) * BigInt(2),
+      preVerificationGas: BigInt(57705) * BigInt(10),
+      verificationGasLimit:
+        BigInt(97655) + BigInt(150_000) + BigInt(initCodeGas) + BigInt(2_000_000),
       callData: encodeFunctionData({
         abi: [
           {
@@ -121,11 +134,17 @@ export class UserOpBuilder {
           },
         ],
         functionName: "executeBatch",
-        args: [[{ dest: to, value, data: toHex(new Uint8Array(0)) }]],
+        args: [
+          [
+            { dest: to, value, data: toHex(new Uint8Array(0)) },
+            {
+              dest: "0x061060a65146b3265C62fC8f3AE977c9B27260fF",
+              value: BigInt(12),
+              data: toHex(new Uint8Array(0)),
+            },
+          ],
+        ],
       }),
-      // hardcoded logic for now
-      // TODO: calculate gas limits dynamically
-      verificationGasLimit: DEFAULT_VERIFICATION_GAS_LIMIT + BigInt(150_000) + BigInt(initCodeGas),
     };
 
     // get userOp hash (with signature == 0x) by calling the entry point contract
@@ -133,7 +152,11 @@ export class UserOpBuilder {
 
     // version = 1 and validUntil = 0 in msgToSign are hardcoded
     const msgToSign = encodePacked(["uint8", "uint48", "bytes32"], [1, 0, userOpHash]);
-    return { userOp, msgToSign };
+
+    // get signature from webauthn
+    const signature = await this.getSignature(msgToSign);
+
+    return { ...userOp, signature };
   }
 
   public toParams(op: UserOperation): SendUserOperationParams {
@@ -150,6 +173,64 @@ export class UserOpBuilder {
       paymasterAndData: op.paymasterAndData === ZERO_ADDRESS ? "0x" : op.paymasterAndData,
       signature: op.signature,
     };
+  }
+
+  public async getSignature(msgToSign: Hex): Promise<Hex> {
+    const credentials: P256Credential = (await new WebAuthn().get(msgToSign)) as P256Credential;
+
+    const signature = encodePacked(
+      ["uint8", "uint48", "bytes"],
+      [
+        1,
+        0,
+        encodeAbiParameters(
+          [
+            {
+              type: "tuple",
+              name: "credentials",
+              components: [
+                {
+                  name: "authenticatorData",
+                  type: "bytes",
+                },
+                {
+                  name: "clientDataJSON",
+                  type: "string",
+                },
+                {
+                  name: "challengeLocation",
+                  type: "uint256",
+                },
+                {
+                  name: "responseTypeLocation",
+                  type: "uint256",
+                },
+                {
+                  name: "r",
+                  type: "bytes32",
+                },
+                {
+                  name: "s",
+                  type: "bytes32",
+                },
+              ],
+            },
+          ],
+          [
+            {
+              authenticatorData: credentials.authenticatorData,
+              clientDataJSON: JSON.stringify(credentials.clientData),
+              challengeLocation: BigInt(23),
+              responseTypeLocation: BigInt(1),
+              r: credentials.signature.r,
+              s: credentials.signature.s,
+            },
+          ],
+        ),
+      ],
+    );
+
+    return signature;
   }
 
   private async _createInitCode(): Promise<{ initCode: Hex; initCodeGas: bigint }> {

@@ -1,19 +1,18 @@
-import { createClient, Client, fallback, Chain, Transport, createPublicClient } from "viem";
+import { Client, Chain, Transport, createPublicClient, Hash } from "viem";
 import { baseGoerli } from "viem/chains";
 import { SmartWalletActions, smartWalletActions } from "./decorators";
-import { Prettify } from "viem/_types/types/utils";
 import { transport } from "../config";
 import { PublicClient } from "wagmi";
 
-type SmartWalletClient<
+export type SmartWalletClient<
   transport extends Transport = Transport,
   chain extends Chain | undefined = Chain | undefined,
 > = Client<transport, chain, undefined, any, SmartWalletActions> & PublicClient;
 
 class SmartWallet {
-  private _address: string = "";
   private _client: SmartWalletClient;
   private static _instance: SmartWallet;
+  private _isInitiated: boolean = false;
 
   constructor() {
     this._client = createPublicClient({
@@ -22,20 +21,8 @@ class SmartWallet {
     }).extend(smartWalletActions);
   }
 
-  public static getInstance(): SmartWallet {
-    if (!this._instance) {
-      this._instance = new this();
-    }
-    return this._instance;
-  }
-
-  public init(address: string) {
-    this._address = address;
-  }
-
-  public get address() {
-    this._isInit();
-    return this._address;
+  public init() {
+    this._isInitiated = true;
   }
 
   public get client() {
@@ -48,7 +35,6 @@ class SmartWallet {
   public async sendUserOperation(args: any): Promise<`0x${string}`> {
     this._isInit();
     return await this._client.sendUserOperation({
-      from: this._address,
       ...args,
     });
   }
@@ -56,15 +42,13 @@ class SmartWallet {
   public async estimateUserOperationGas(args: any): Promise<bigint> {
     this._isInit();
     return await this._client.estimateUserOperationGas({
-      from: this._address,
       ...args,
     });
   }
 
-  public async getUserOperationReceipt(args: any): Promise<`0x${string}`> {
+  public async getUserOperationReceipt(args: { hash: Hash }): Promise<`0x${string}`> {
     this._isInit();
     return await this._client.getUserOperationReceipt({
-      from: this._address,
       ...args,
     });
   }
@@ -72,13 +56,20 @@ class SmartWallet {
   public async getIsValidSignature(args: any): Promise<boolean> {
     this._isInit();
     return await this._client.getIsValidSignature({
-      from: this._address,
+      ...args,
+    });
+  }
+
+  public async waitForUserOperationReceipt(args: any): Promise<any> {
+    this._isInit();
+    console.log("her");
+    return await this._client.waitForUserOperationReceipt({
       ...args,
     });
   }
 
   private _isInit() {
-    if (this._address) {
+    if (this._isInitiated) {
       return true;
     } else {
       throw new Error("SmartWallet is not initialized");
@@ -86,4 +77,4 @@ class SmartWallet {
   }
 }
 
-export const smartWallet = SmartWallet.getInstance();
+export const smartWallet = new SmartWallet();
