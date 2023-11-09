@@ -6,17 +6,15 @@
 
 html {
   overflow-x: hidden;
-  background-color: #696E77;
-
+  background-color: #696e77;
 }
 
 body {
   position: relative;
   max-width: 390px;
   min-height: 100svh;
-  margin: 0 auto; 
+  margin: 0 auto;
   overflow: hidden;
-
 }
 
 @media (min-width: 391px) {
@@ -25,6 +23,21 @@ body {
     border-radius: 20px;
     min-height: calc(100svh - 40px);
     overflow: hidden;
-    
   }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 60;
+  height: 60;
+  fill: rgb(52, 171, 52);
+  animation: spin 1s linear infinite;
 }

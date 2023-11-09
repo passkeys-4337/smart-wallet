@@ -20,3 +20,6 @@ export const DEFAULT_USER_OP: UserOperation = {
   paymasterAndData: toHex(new Uint8Array(0)),
   signature: toHex(new Uint8Array(0)),
 };
+
+// maxFeePerGas = baseFeePerGas + maxPriorityFeePerGas
+// -> maxPriorityFeePerGas = maxFeePerGas - baseFeePerGas

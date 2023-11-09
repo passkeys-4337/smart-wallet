@@ -1,6 +1,6 @@
 import "@radix-ui/themes/styles.css";
 import "./globals.css";
-import { Theme, ThemePanel } from "@radix-ui/themes";
+import { Theme } from "@radix-ui/themes";
 import ThemeProvider from "@/providers/ThemeProvider";
 import { WalletConnectProvider } from "@/libs/wallet-connect";
 import { SmartWalletProvider } from "@/libs/smart-wallet/SmartWalletProvider";
@@ -19,7 +19,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ThemeProvider attribute="class">
               <Theme>
                 <ModalProvider>{children}</ModalProvider>
-                {/* <ThemePanel /> */}
               </Theme>
             </ThemeProvider>
           </WalletConnectProvider>
