@@ -3,8 +3,13 @@ pragma solidity ^0.8.12;
 
 import "openzeppelin-contracts/contracts/utils/Create2.sol";
 import "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-
 import "src/SimpleAccount.sol";
+
+struct User {
+    uint256 id;
+    bytes32[2] publicKey;
+    address account;
+}
 
 /**
  * A sample factory contract for SimpleAccount
@@ -15,10 +20,21 @@ import "src/SimpleAccount.sol";
 contract SimpleAccountFactory {
     SimpleAccount public immutable accountImplem;
     IEntryPoint public immutable entryPoint;
+    bytes32 public constant SALT = keccak256("hocuspocusxyz");
+
+    mapping(uint256 id => User user) public users;
 
     constructor(IEntryPoint _entryPoint) {
         entryPoint = _entryPoint;
         accountImplem = new SimpleAccount(_entryPoint);
+    }
+
+    function saveUser(uint256 id, bytes32[2] memory publicKey) external {
+        users[id] = User(id, publicKey, this.getAddress(publicKey));
+    }
+
+    function getUser(uint256 id) external view returns (User memory) {
+        return users[id];
     }
 
     /**
@@ -28,10 +44,9 @@ contract SimpleAccountFactory {
      * This method returns an existing account address so that entryPoint.getSenderAddress() would work even after account creation.
      */
     function createAccount(
-        bytes32[2] memory publicKey,
-        uint256 salt
-    ) public payable returns (SimpleAccount) {
-        address addr = getAddress(publicKey, salt);
+        bytes32[2] memory publicKey
+    ) external payable returns (SimpleAccount) {
+        address addr = getAddress(publicKey);
 
         // Prefund the account with msg.value
         if (msg.value > 0) {
@@ -47,7 +62,7 @@ contract SimpleAccountFactory {
         return
             SimpleAccount(
                 payable(
-                    new ERC1967Proxy{salt: bytes32(salt)}(
+                    new ERC1967Proxy{salt: SALT}(
                         address(accountImplem),
                         abi.encodeCall(SimpleAccount.initialize, (publicKey))
                     )
@@ -59,12 +74,11 @@ contract SimpleAccountFactory {
      * Calculate the counterfactual address of this account as it would be returned by createAccount()
      */
     function getAddress(
-        bytes32[2] memory publicKey,
-        uint256 salt
+        bytes32[2] memory publicKey
     ) public view returns (address) {
         return
             Create2.computeAddress(
-                bytes32(salt),
+                SALT,
                 keccak256(
                     abi.encodePacked(
                         type(ERC1967Proxy).creationCode,

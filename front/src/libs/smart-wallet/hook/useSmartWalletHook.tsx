@@ -6,7 +6,7 @@ export function useSmartWalletHook() {
   const [address, setAddress] = useState<Hash | null>(null);
 
   async function init(address: Hash) {
-    smartWallet.init(address);
+    smartWallet.init();
     setAddress(address);
   }
 

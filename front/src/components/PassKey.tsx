@@ -34,7 +34,7 @@ export default function PassKey() {
   async function onGet() {
     setCredential(
       await webauthn.get(
-        `0x01000000000000${"ed8154bc00355192a1f1f3a21ec5442bd05e3bb1c0c6ab089d6e138f88125d6a"}`,
+        `0x01000000000000${"72fe91f1b68f75ce391ac973c52d8c525356199dbc5bef6c7bc6f8e2308ead87"}`,
       ),
     );
   }
@@ -56,7 +56,9 @@ export default function PassKey() {
       {createCredential && (
         <div style={{ content: "center", margin: 20 }}>{stringify(createCredential)}</div>
       )}
-      {credential && <div style={{ content: "center", margin: 20 }}>{stringify(credential)}</div>}
+      {credential && (
+        <div style={{ content: "center", margin: 20 }}>{stringify(credential, null, 2)}</div>
+      )}
     </>
   );
 }
