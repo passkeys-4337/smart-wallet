@@ -34,11 +34,9 @@ export function SendTransaction() {
             value: value || BigInt(11),
           });
 
-          console.log("hash", hash);
           const receipt = await smartWallet.waitForUserOperationReceipt({ hash });
           setTxReceipt(receipt);
 
-          console.log("receipt", receipt);
           setIsLoading(false);
         }}
       >

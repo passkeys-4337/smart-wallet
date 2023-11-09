@@ -62,7 +62,6 @@ class SmartWallet {
 
   public async waitForUserOperationReceipt(args: any): Promise<any> {
     this._isInit();
-    console.log("her");
     return await this._client.waitForUserOperationReceipt({
       ...args,
     });

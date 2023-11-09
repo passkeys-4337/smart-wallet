@@ -47,7 +47,6 @@ export const waitForUserOperationReceipt = <TChain extends Chain | undefined>(
         };
 
         const _userOperationReceipt = await getUserOperationReceipt(client, { hash });
-        console.log("_userOperationReceipt", _userOperationReceipt);
 
         if (_userOperationReceipt !== null) {
           userOperationReceipt = _userOperationReceipt;
