@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { WebAuthn, P256Credential } from "../libs/webauthn";
+import { WebAuthn, P256Credential } from "../libs/web-authn/service/web-authn";
 import { stringify } from "@/utils/stringify";
 import { Hex } from "viem";
 import { saveUser } from "@/libs/factory";

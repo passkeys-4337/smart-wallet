@@ -5,22 +5,73 @@ import { parseAuthenticatorData } from "@simplewebauthn/server/helpers";
 import { AsnParser } from "@peculiar/asn1-schema";
 import { ECDSASigValue } from "@peculiar/asn1-ecc";
 import { concatUint8Arrays } from "@/utils/arrayConcat";
-import { CreateCredential, P256Credential, P256Signature } from "@/libs/webauthn/types";
+import { CreateCredential, P256Credential, P256Signature } from "@/libs/web-authn/types";
 import { shouldRemoveLeadingZero } from "@/utils/removeLeadingZero";
+import { startRegistration } from "@simplewebauthn/browser";
+import { generateRegistrationOptions } from "@simplewebauthn/server";
 
-export * from "@/libs/webauthn/types";
+export * from "@/libs/web-authn/types";
 
 export class WebAuthn {
-  private _generateRandomBytes(): Buffer {
+  private static _generateRandomBytes(): Buffer {
     return crypto.randomBytes(16);
   }
 
-  async create({ username }: { username: string }): Promise<CreateCredential | null> {
+  public static disconnect() {
+    localStorage.removeItem("user");
+  }
+
+  public static isSupportedByBrowser(): boolean {
+    console.log(
+      "isSupportedByBrowser",
+      window?.PublicKeyCredential !== undefined && typeof window.PublicKeyCredential === "function",
+    );
+    return (
+      window?.PublicKeyCredential !== undefined && typeof window.PublicKeyCredential === "function"
+    );
+  }
+
+  public static async platformAuthenticatorIsAvailable(): Promise<boolean> {
+    if (
+      !this.isSupportedByBrowser() &&
+      typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable !== "function"
+    ) {
+      return false;
+    }
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  }
+
+  public static async isConditionalSupported(): Promise<boolean> {
+    if (
+      !this.isSupportedByBrowser() &&
+      typeof window.PublicKeyCredential.isConditionalMediationAvailable !== "function"
+    ) {
+      return false;
+    }
+    return await PublicKeyCredential.isConditionalMediationAvailable();
+  }
+
+  public static async isConditional() {
+    if (
+      typeof window.PublicKeyCredential !== "undefined" &&
+      typeof window.PublicKeyCredential.isConditionalMediationAvailable === "function"
+    ) {
+      const available = await PublicKeyCredential.isConditionalMediationAvailable();
+
+      if (available) {
+        this.get();
+      }
+    }
+  }
+
+  public static async create({ username }: { username: string }): Promise<CreateCredential | null> {
+    this.isSupportedByBrowser();
+
     const options: PublicKeyCredentialCreationOptions = {
       timeout: 60000,
       rp: {
         name: "hocuspocusxyz",
-        id: "localhost",
+        id: "f445-2001-861-8ac1-ad50-b08d-6c0b-7168-132a.ngrok-free.app",
       },
       user: {
         id: this._generateRandomBytes(),
@@ -33,6 +84,7 @@ export class WebAuthn {
       authenticatorSelection: {
         requireResidentKey: true,
         userVerification: "required",
+        authenticatorAttachment: "platform",
       },
       attestation: "direct",
       challenge: Uint8Array.from("random-challenge", (c) => c.charCodeAt(0)),
@@ -61,6 +113,23 @@ export class WebAuthn {
     const x = toHex(publicKey.get(-2));
     const y = toHex(publicKey.get(-3));
 
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: toHex(new Uint8Array(cred.rawId)),
+        username,
+        address: "0x000",
+      }),
+    );
+
+    localStorage.setItem(
+      "hasWebAuthn",
+      JSON.stringify({
+        hasWebAuthn: true,
+      }),
+    );
+
+    // SAVE PUBKEY TO FACTORY
     return {
       rawId: toHex(new Uint8Array(cred.rawId)),
       pubKey: {
@@ -70,16 +139,20 @@ export class WebAuthn {
     };
   }
 
-  async get(challenge: Hex): Promise<P256Credential | null> {
+  public static async get(challenge?: Hex): Promise<P256Credential | null> {
+    this.isSupportedByBrowser();
+
     const options: PublicKeyCredentialRequestOptions = {
       timeout: 60000,
-      challenge: Buffer.from(challenge.slice(2), "hex"),
-      rpId: "localhost",
-      userVerification: "required",
-      mediation: "conditional",
+      challenge: challenge
+        ? Buffer.from(challenge.slice(2), "hex")
+        : Uint8Array.from("random-challenge", (c) => c.charCodeAt(0)),
+      rpId: "f445-2001-861-8ac1-ad50-b08d-6c0b-7168-132a.ngrok-free.app",
+      userVerification: "preferred",
     } as PublicKeyCredentialRequestOptions;
 
-    const credential = await navigator.credentials.get({
+    const credential = await window.navigator.credentials.get({
+      mediation: "conditional",
       publicKey: options,
     });
 
