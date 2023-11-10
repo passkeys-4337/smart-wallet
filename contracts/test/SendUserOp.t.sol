@@ -24,7 +24,7 @@ contract SendUserOpTest is Test {
             payable(0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789)
         );
         factory = SimpleAccountFactory(
-            0xCD7DA03e26Fa4b7BcB43B4e5Ed65bE5cC9d844B0
+            0x7236f1BB9BE463437261AA3f74008Bdf76d4ceC1
         );
     }
 
@@ -49,7 +49,6 @@ contract SendUserOpTest is Test {
     );
 
     function testSimpleUserOp() public {
-        // vm.etch(address(0x1234), type(P256Verifier).runtimeCode);
         bytes32[2] memory publicKey = [
             bytes32(
                 0xe7f630b0eb3594e991cfadbd4047cd5fecddf379b4a4458e3ea2b9566e09882a
@@ -61,7 +60,7 @@ contract SendUserOpTest is Test {
 
         uint8 version = 1;
         uint48 validUntil = 0;
-        bytes32 expectedUserOpHash = hex"5c4665f4794a8f0edf8dd366539911aca9defe9aa54d06303cfe47cca393bd7b";
+        bytes32 expectedUserOpHash = hex"72fe91f1b68f75ce391ac973c52d8c525356199dbc5bef6c7bc6f8e2308ead87";
         bytes memory challengeToSign = abi.encodePacked(
             version,
             validUntil,
@@ -74,15 +73,13 @@ contract SendUserOpTest is Test {
             abi.encode( // signature
                 Utils.rawSignatureToSignature({
                     challenge: challengeToSign,
-                    r: 0xf91f09739d7fe162dc7ad35f3117b6ed18181fa9ea817bf8ffdc8c03e004527e,
-                    s: 0xd3b053205ced70fc403953092db25b64ac43d48ee2f30147a2134de7ead0c446
+                    r: 0x813d6d26f828f855a570eff45308c8bde0d5a417d0f3e07484b0d90efef19382,
+                    s: 0x282e1b0004a893bf6d22fec8cf97190f591ffec78a3b0ab3ea45dfe9fc035d29
                 })
             )
         );
 
-        uint256 salt = 123;
-
-        SimpleAccount account = factory.createAccount(publicKey, salt);
+        SimpleAccount account = factory.createAccount(publicKey);
         vm.deal(address(account), 1 ether);
 
         // dummy op
@@ -139,10 +136,6 @@ contract SendUserOpTest is Test {
     }
 
     function testUserOpWithInitCode() public {
-        // fake verifier
-        // P256Verifier verifier = new P256Verifier();
-        // vm.etch(address(0x1234), type(P256Verifier).runtimeCode);
-
         bytes32[2] memory publicKey = [
             bytes32(
                 0xe7f630b0eb3594e991cfadbd4047cd5fecddf379b4a4458e3ea2b9566e09882a
@@ -154,7 +147,7 @@ contract SendUserOpTest is Test {
 
         uint8 version = 1;
         uint48 validUntil = 0;
-        bytes32 expectedUserOpHash = hex"ed8154bc00355192a1f1f3a21ec5442bd05e3bb1c0c6ab089d6e138f88125d6a";
+        bytes32 expectedUserOpHash = hex"ed8c67fc3b6e6eb7b867c90201f13fa61a45f8eeaea636057443e64f56013f31";
         bytes memory challengeToSign = abi.encodePacked(
             version,
             validUntil,
@@ -167,25 +160,23 @@ contract SendUserOpTest is Test {
             abi.encode( // signature
                 Utils.rawSignatureToSignature({
                     challenge: challengeToSign,
-                    r: 0xa82d88cd9b64be0e6014041c263e7c3dfe879432cf50366fd027018bf9a6f2e6,
-                    s: 0x3457a4b5cdd4b0806d0bb609b2274e268e30b43f772473363aa7b2799119b0d1
+                    r: 0xbced80a2f0cc4f977e145107744da4475b7f127e9d0ec73c77785279874ca8dc,
+                    s: 0x68597940751e2f8cfd60433a9a22fdb4fe704a3148e47ee69b7a5909ab4b3948
                 })
             )
         );
 
-        uint256 salt = 123;
-
         // account not deployed yet
         // we want to test the initCode feature of UserOperation
         SimpleAccount account = SimpleAccount(
-            payable(0x60587a33099742fb5D3e97174804e7Ab11A30118)
+            payable(0x31A5Ae294082B7E0A243d64B98DFc290Ae519EDB)
         );
         vm.deal(address(account), 1 ether);
 
         // get init code
         bytes memory initCode = abi.encodePacked(
             address(factory),
-            abi.encodeCall(factory.createAccount, (publicKey, salt))
+            abi.encodeCall(factory.createAccount, (publicKey))
         );
 
         // send 42 wei to bigq dev
@@ -244,14 +235,5 @@ contract SendUserOpTest is Test {
         // compute balance after userOp validation and execution
         uint256 balanceAfter = bigqDevAddress.balance;
         assertEq(balanceAfter - balanceBefore, 42);
-
-        // // code coverage can't handle indirect calls
-        // // call validateUserOp directly
-        // SimpleAccount account2 = new SimpleAccount(account.entryPoint());
-        // vm.store(address(account2), 0, 0); // set _initialized = 0
-        // account2.initialize(publicKey);
-        // vm.prank(address(entryPoint));
-        // uint256 validationData = account2.validateUserOp(op, hash, 0);
-        // assertEq(validationData, 0);
     }
 }

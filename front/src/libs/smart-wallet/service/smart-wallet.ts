@@ -1,13 +1,41 @@
-import { Client, Chain, Transport, createPublicClient, Hash } from "viem";
+import {
+  Client,
+  Chain,
+  Transport,
+  Hash,
+  Account,
+  PublicClientConfig,
+  PublicClient,
+  createPublicClient,
+} from "viem";
 import { baseGoerli } from "viem/chains";
 import { SmartWalletActions, smartWalletActions } from "./decorators";
 import { transport } from "../config";
-import { PublicClient } from "wagmi";
+import { ERC4337RpcSchema, UserOperationAsHex } from "@/libs/smart-wallet/service/userOps";
 
-export type SmartWalletClient<
-  transport extends Transport = Transport,
-  chain extends Chain | undefined = Chain | undefined,
-> = Client<transport, chain, undefined, any, SmartWalletActions> & PublicClient;
+export type SmartWalletClient<chain extends Chain | undefined = Chain | undefined> = Client<
+  Transport,
+  chain,
+  Account | undefined,
+  ERC4337RpcSchema,
+  SmartWalletActions
+> &
+  PublicClient;
+
+export const createSmartWalletClient = <
+  transport extends Transport,
+  chain extends Chain | undefined = undefined,
+>(
+  parameters: PublicClientConfig<transport, chain>,
+): SmartWalletClient => {
+  const { key = "public", name = "Smart Wallet Client" } = parameters;
+  const client = createPublicClient({
+    ...parameters,
+    key,
+    name,
+  });
+  return client.extend(smartWalletActions);
+};
 
 class SmartWallet {
   private _client: SmartWalletClient;
@@ -15,10 +43,10 @@ class SmartWallet {
   private _isInitiated: boolean = false;
 
   constructor() {
-    this._client = createPublicClient({
+    this._client = createSmartWalletClient({
       chain: baseGoerli,
       transport,
-    }).extend(smartWalletActions);
+    });
   }
 
   public init() {
@@ -32,7 +60,7 @@ class SmartWallet {
     return this._client;
   }
 
-  public async sendUserOperation(args: any): Promise<`0x${string}`> {
+  public async sendUserOperation(args: { userOp: UserOperationAsHex }): Promise<`0x${string}`> {
     this._isInit();
     return await this._client.sendUserOperation({
       ...args,
@@ -62,7 +90,6 @@ class SmartWallet {
 
   public async waitForUserOperationReceipt(args: any): Promise<any> {
     this._isInit();
-    console.log("her");
     return await this._client.waitForUserOperationReceipt({
       ...args,
     });

@@ -1,14 +1,12 @@
 import { UserOperation } from "@/libs/smart-wallet/service/userOps/types";
-import { toHex } from "viem";
+import { toHex, zeroAddress } from "viem";
 
 export const DEFAULT_CALL_GAS_LIMIT = BigInt(200_000);
 export const DEFAULT_VERIFICATION_GAS_LIMIT = BigInt(2_000_000);
 export const DEFAULT_PRE_VERIFICATION_GAS = BigInt(65_000);
 
-export const ZERO_ADDRESS = toHex(new Uint8Array(20)); // 0x00 * 20
-
 export const DEFAULT_USER_OP: UserOperation = {
-  sender: ZERO_ADDRESS,
+  sender: zeroAddress,
   nonce: BigInt(0),
   initCode: toHex(new Uint8Array(0)),
   callData: toHex(new Uint8Array(0)),
@@ -21,5 +19,4 @@ export const DEFAULT_USER_OP: UserOperation = {
   signature: toHex(new Uint8Array(0)),
 };
 
-// maxFeePerGas = baseFeePerGas + maxPriorityFeePerGas
-// -> maxPriorityFeePerGas = maxFeePerGas - baseFeePerGas
+export const emptyHex = toHex(new Uint8Array(0));

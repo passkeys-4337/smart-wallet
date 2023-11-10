@@ -1,3 +1,4 @@
+import { Client, PublicActions, publicActions } from "viem";
 import {
   EstimateUserOperationGasReturnType,
   estimateUserOperationGas,
@@ -10,21 +11,24 @@ import {
   waitForUserOperationReceipt,
 } from "../actions";
 import { SmartWalletClient } from "@/libs/smart-wallet/service/smart-wallet";
+import { UserOperationAsHex } from "@/libs/smart-wallet/service/userOps";
 
 export type SmartWalletActions = {
-  sendUserOperation: (args: any) => Promise<SendUserOperationReturnType>;
+  sendUserOperation: (args: { userOp: UserOperationAsHex }) => Promise<SendUserOperationReturnType>;
   estimateUserOperationGas: (args: any) => Promise<EstimateUserOperationGasReturnType>;
   getUserOperationReceipt: (args: any) => Promise<GetUserOperationReceiptReturnType>;
   getIsValidSignature: (args: any) => Promise<GetIsValidSignatureReturnType>;
   waitForUserOperationReceipt: (args: any) => Promise<GetUserOperationReceiptReturnType>;
-};
+} & PublicActions;
 
-export function smartWalletActions(client: SmartWalletClient): SmartWalletActions {
+export function smartWalletActions(client: Client): SmartWalletActions {
   return {
-    sendUserOperation: (args) => sendUserOperation(client, args),
-    estimateUserOperationGas: (args) => estimateUserOperationGas(client, args),
-    getUserOperationReceipt: (args) => getUserOperationReceipt(client, args),
-    getIsValidSignature: (args) => getIsValidSignature(client, args),
-    waitForUserOperationReceipt: (args) => waitForUserOperationReceipt(client, args),
+    ...publicActions(client),
+    sendUserOperation: (args) => sendUserOperation(client as SmartWalletClient, args),
+    estimateUserOperationGas: (args) => estimateUserOperationGas(client as SmartWalletClient, args),
+    getUserOperationReceipt: (args) => getUserOperationReceipt(client as SmartWalletClient, args),
+    getIsValidSignature: (args) => getIsValidSignature(client as SmartWalletClient, args),
+    waitForUserOperationReceipt: (args) =>
+      waitForUserOperationReceipt(client as SmartWalletClient, args),
   };
 }

@@ -1,4 +1,3 @@
-import { SendUserOperationParams, UserOperation } from "@/libs/smart-wallet/service/userOps/types";
 import {
   Chain,
   GetContractReturnType,
@@ -12,22 +11,22 @@ import {
   getContract,
   http,
   parseAbi,
-  formatEther,
   toHex,
   encodeAbiParameters,
+  Address,
+  zeroAddress,
 } from "viem";
-import factoryJSON from "@/abis/factory.json";
-import { DEFAULT_USER_OP, ZERO_ADDRESS } from "@/libs/smart-wallet/service/userOps/constants";
+import { UserOperationAsHex, UserOperation, Call } from "@/libs/smart-wallet/service/userOps/types";
+import { DEFAULT_USER_OP } from "@/libs/smart-wallet/service/userOps/constants";
 import { P256Credential, WebAuthn } from "@/libs/webauthn";
-
-const factoryAbi = [...factoryJSON.abi] as const;
+import { ENTRYPOINT_ABI, ENTRYPOINT_ADDRESS, FACTORY_ABI, FACTORY_ADDRESS } from "@/constants";
 
 export class UserOpBuilder {
-  public account: Hex = "0x061060a65146b3265C62fC8f3AE977c9B27260fF";
-  public entryPoint: Hex = "0x5ff137d4b0fdcd49dca30c7cf57e578a026d2789";
+  public relayer: Hex = "0x061060a65146b3265C62fC8f3AE977c9B27260fF";
+  public entryPoint: Hex = ENTRYPOINT_ADDRESS;
   public chain: Chain;
   public publicClient: PublicClient;
-  public factoryContract: GetContractReturnType<typeof factoryAbi, WalletClient, PublicClient>;
+  public factoryContract: GetContractReturnType<typeof FACTORY_ABI, WalletClient, PublicClient>;
 
   constructor(chain: Chain) {
     this.chain = chain;
@@ -37,14 +36,14 @@ export class UserOpBuilder {
     });
 
     const walletClient = createWalletClient({
-      account: this.account,
+      account: this.relayer,
       chain,
       transport: http(),
     });
 
     this.factoryContract = getContract({
-      address: "0xCD7DA03e26Fa4b7BcB43B4e5Ed65bE5cC9d844B0", // only on Base Goerli
-      abi: factoryAbi,
+      address: FACTORY_ADDRESS, // only on Base Goerli
+      abi: FACTORY_ABI,
       walletClient,
       publicClient: this.publicClient,
     });
@@ -52,22 +51,22 @@ export class UserOpBuilder {
 
   // reference: https://ethereum.stackexchange.com/questions/150796/how-to-create-a-raw-erc-4337-useroperation-from-scratch-and-then-send-it-to-bund
   async buildUserOp({
-    to,
-    value,
+    calls,
     maxFeePerGas,
     maxPriorityFeePerGas,
+    keyId,
   }: {
-    to: Hex;
-    value: bigint;
+    calls: Call[];
     maxFeePerGas: bigint;
     maxPriorityFeePerGas: bigint;
-  }): Promise<UserOperation> {
+    keyId: Hex;
+  }): Promise<UserOperationAsHex> {
     // calculate smart wallet address via Factory contract
-    const sender = await this._calculateSmartWalletAddress();
+    const { account, publicKey } = await this._calculateSmartWalletAddress(keyId); // the keyId is the id tied to the user's public key
 
     // get bytecode
     const bytecode = await this.publicClient.getBytecode({
-      address: sender,
+      address: account,
     });
 
     let initCode = toHex(new Uint8Array(0));
@@ -75,76 +74,28 @@ export class UserOpBuilder {
     if (bytecode === undefined) {
       // smart wallet does NOT already exists
       // calculate initCode and initCodeGas
-      ({ initCode, initCodeGas } = await this._createInitCode());
+      ({ initCode, initCodeGas } = await this._createInitCode(publicKey));
     }
 
     // calculate nonce
-    const nonce = await this._getNonce(sender);
+    const nonce = await this._getNonce(account);
 
-    console.log(
-      "multiply",
-      formatEther(
-        maxFeePerGas * (BigInt(97655) + BigInt(initCodeGas) + BigInt(57705) + BigInt(18286)),
-      ),
-    );
+    // create callData
+    const callData = this._addCallData(calls);
 
     // create user operation
     const userOp: UserOperation = {
       ...DEFAULT_USER_OP,
-      sender,
+      sender: account,
       nonce,
       initCode,
+      callData,
       maxFeePerGas,
       maxPriorityFeePerGas,
       callGasLimit: BigInt(18286) * BigInt(2),
       preVerificationGas: BigInt(57705) * BigInt(10),
       verificationGasLimit:
         BigInt(97655) + BigInt(150_000) + BigInt(initCodeGas) + BigInt(2_000_000),
-      callData: encodeFunctionData({
-        abi: [
-          {
-            inputs: [
-              {
-                components: [
-                  {
-                    internalType: "address",
-                    name: "dest",
-                    type: "address",
-                  },
-                  {
-                    internalType: "uint256",
-                    name: "value",
-                    type: "uint256",
-                  },
-                  {
-                    internalType: "bytes",
-                    name: "data",
-                    type: "bytes",
-                  },
-                ],
-                internalType: "struct Call[]",
-                name: "calls",
-                type: "tuple[]",
-              },
-            ],
-            name: "executeBatch",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-        ],
-        functionName: "executeBatch",
-        args: [
-          [
-            { dest: to, value, data: toHex(new Uint8Array(0)) },
-            {
-              dest: "0x061060a65146b3265C62fC8f3AE977c9B27260fF",
-              value: BigInt(12),
-              data: toHex(new Uint8Array(0)),
-            },
-          ],
-        ],
-      }),
     };
 
     // get userOp hash (with signature == 0x) by calling the entry point contract
@@ -156,10 +107,10 @@ export class UserOpBuilder {
     // get signature from webauthn
     const signature = await this.getSignature(msgToSign);
 
-    return { ...userOp, signature };
+    return this.toParams({ ...userOp, signature });
   }
 
-  public toParams(op: UserOperation): SendUserOperationParams {
+  public toParams(op: UserOperation): UserOperationAsHex {
     return {
       sender: op.sender,
       nonce: toHex(op.nonce),
@@ -170,7 +121,7 @@ export class UserOpBuilder {
       preVerificationGas: toHex(op.preVerificationGas),
       maxFeePerGas: toHex(op.maxFeePerGas),
       maxPriorityFeePerGas: toHex(op.maxPriorityFeePerGas),
-      paymasterAndData: op.paymasterAndData === ZERO_ADDRESS ? "0x" : op.paymasterAndData,
+      paymasterAndData: op.paymasterAndData === zeroAddress ? "0x" : op.paymasterAndData,
       signature: op.signature,
     };
   }
@@ -233,17 +184,13 @@ export class UserOpBuilder {
     return signature;
   }
 
-  private async _createInitCode(): Promise<{ initCode: Hex; initCodeGas: bigint }> {
+  private async _createInitCode(
+    pubKey: readonly [Hex, Hex],
+  ): Promise<{ initCode: Hex; initCodeGas: bigint }> {
     let createAccountTx = encodeFunctionData({
-      abi: factoryAbi,
+      abi: FACTORY_ABI,
       functionName: "createAccount",
-      args: [
-        [
-          "0x764e45a20b5b8b5c2e4043dfd5f21751c0f6c22c5547fdee58196792f3862379",
-          "0xeec85d606a0959f94db54d39eccf796624ada04cb5ecb0f2bda8c5cc0aaaf241",
-        ],
-        123,
-      ],
+      args: [pubKey],
     });
 
     let initCode = encodePacked(
@@ -252,7 +199,7 @@ export class UserOpBuilder {
     );
 
     let initCodeGas = await this.publicClient.estimateGas({
-      account: this.account,
+      account: this.relayer,
       to: this.factoryContract.address,
       data: createAccountTx,
     });
@@ -263,16 +210,50 @@ export class UserOpBuilder {
     };
   }
 
-  private async _calculateSmartWalletAddress(): Promise<Hex> {
-    const result: Hex = (await this.factoryContract.read.getAddress([
-      [
-        "0x764e45a20b5b8b5c2e4043dfd5f21751c0f6c22c5547fdee58196792f3862379",
-        "0xeec85d606a0959f94db54d39eccf796624ada04cb5ecb0f2bda8c5cc0aaaf241",
-      ],
-      123,
-    ])) as Hex;
+  private async _calculateSmartWalletAddress(
+    id: Hex,
+  ): Promise<{ account: Address; publicKey: readonly [Hex, Hex] }> {
+    const user = await this.factoryContract.read.getUser([BigInt(id)]);
+    return { account: user.account, publicKey: user.publicKey };
+  }
 
-    return result;
+  private _addCallData(calls: Call[]): Hex {
+    return encodeFunctionData({
+      abi: [
+        {
+          inputs: [
+            {
+              components: [
+                {
+                  internalType: "address",
+                  name: "dest",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "value",
+                  type: "uint256",
+                },
+                {
+                  internalType: "bytes",
+                  name: "data",
+                  type: "bytes",
+                },
+              ],
+              internalType: "struct Call[]",
+              name: "calls",
+              type: "tuple[]",
+            },
+          ],
+          name: "executeBatch",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      functionName: "executeBatch",
+      args: [calls],
+    });
   }
 
   private async _getNonce(smartWalletAddress: Hex): Promise<bigint> {
@@ -288,84 +269,7 @@ export class UserOpBuilder {
   private async _getUserOpHash(userOp: UserOperation): Promise<Hex> {
     const entryPointContract = getContract({
       address: this.entryPoint,
-      abi: [
-        {
-          inputs: [
-            {
-              components: [
-                {
-                  internalType: "address",
-                  name: "sender",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "nonce",
-                  type: "uint256",
-                },
-                {
-                  internalType: "bytes",
-                  name: "initCode",
-                  type: "bytes",
-                },
-                {
-                  internalType: "bytes",
-                  name: "callData",
-                  type: "bytes",
-                },
-                {
-                  internalType: "uint256",
-                  name: "callGasLimit",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "verificationGasLimit",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "preVerificationGas",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxFeePerGas",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "maxPriorityFeePerGas",
-                  type: "uint256",
-                },
-                {
-                  internalType: "bytes",
-                  name: "paymasterAndData",
-                  type: "bytes",
-                },
-                {
-                  internalType: "bytes",
-                  name: "signature",
-                  type: "bytes",
-                },
-              ],
-              internalType: "struct UserOperation",
-              name: "userOp",
-              type: "tuple",
-            },
-          ],
-          name: "getUserOpHash",
-          outputs: [
-            {
-              internalType: "bytes32",
-              name: "",
-              type: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-      ],
+      abi: ENTRYPOINT_ABI,
       publicClient: this.publicClient,
     });
 
