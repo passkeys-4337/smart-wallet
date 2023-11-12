@@ -2,10 +2,11 @@
 
 import { Chain, EstimateFeesPerGasReturnType, Hex, toHex } from "viem";
 import { smartWallet } from "@/libs/smart-wallet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@radix-ui/themes";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { UserOpBuilder, emptyHex } from "@/libs/smart-wallet/service/userOps";
+import { useBalance } from "@/providers/BalanceProvider";
 
 smartWallet.init();
 const builder = new UserOpBuilder(smartWallet.client.chain as Chain);
@@ -13,6 +14,8 @@ const builder = new UserOpBuilder(smartWallet.client.chain as Chain);
 export function SendTransaction() {
   const [txReceipt, setTxReceipt] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const KEY_ID = "0x9e925f1ff5b39500f805ff205534b589c72603c740b3de6975511818095eec36";
 
   return (
     <>
@@ -39,7 +42,7 @@ export function SendTransaction() {
             maxPriorityFeePerGas: maxPriorityFeePerGas as bigint,
             // TODO: replace this with the keyId provided by the auth context
             // this is the keyId for bigq
-            keyId: "0x9e925f1ff5b39500f805ff205534b589c72603c740b3de6975511818095eec36",
+            keyId: KEY_ID,
           });
 
           const hash = await smartWallet.sendUserOperation({ userOp });

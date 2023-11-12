@@ -3,6 +3,7 @@ import SessionList from "@/components/SessionList";
 import WCInput from "@/components/WCInput";
 import PassKey from "@/components/PassKey";
 import { SendTransaction } from "@/components/SendTransaction";
+import Balance from "@/components/Balance";
 
 export default async function Home() {
   return (
@@ -14,6 +15,7 @@ export default async function Home() {
         <SessionList />
         <PassKey />
         <SendTransaction />
+        <Balance />
       </Box>
     </Flex>
   );

@@ -1,25 +1,21 @@
+import { PUBLIC_CLIENT } from "@/constants/client";
 import { FACTORY_ABI, FACTORY_ADDRESS } from "@/constants/factory";
-import { Hex, createPublicClient, http, stringify, toHex } from "viem";
-import { baseGoerli } from "viem/chains";
+import { Hex, stringify, toHex } from "viem";
 
 export async function GET(_req: Request, { params }: { params: { id: Hex } }) {
   const { id } = params;
-  console.log(id);
   if (!id) {
     return Response.json(JSON.parse(stringify({ error: "id is required" })));
   }
 
-  const publicClient = createPublicClient({
-    chain: baseGoerli,
-    transport: http(),
-  });
-
-  const user = await publicClient.readContract({
+  const user = await PUBLIC_CLIENT.readContract({
     address: FACTORY_ADDRESS,
     abi: FACTORY_ABI,
     functionName: "getUser",
     args: [BigInt(id)],
   });
 
-  return Response.json(JSON.parse(stringify({ ...user, id: toHex(user.id) })));
+  const balance = await PUBLIC_CLIENT.getBalance({ address: user.account });
+
+  return Response.json(JSON.parse(stringify({ ...user, id: toHex(user.id), balance })));
 }

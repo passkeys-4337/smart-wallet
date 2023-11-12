@@ -1,8 +1,8 @@
 import { Address, Hex } from "viem";
 
-export async function getUser(
-  id: Hex,
-): Promise<{ id: Hex; pubKey: { x: Hex; y: Hex }; account: Address }> {
+export type User = { id: Hex; pubKey: { x: Hex; y: Hex }; account: Address; balance: bigint };
+
+export async function getUser(id: Hex): Promise<User> {
   const response = await fetch(`/api/users/${id}`, {
     method: "GET",
   });
@@ -15,5 +15,6 @@ export async function getUser(
       y: user.publicKey[1],
     },
     account: user.account,
+    balance: user.balance,
   };
 }
