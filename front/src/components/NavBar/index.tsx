@@ -1,12 +1,9 @@
 "use client";
 
 import { Button, Flex } from "@radix-ui/themes";
-import sendSVG from "./send.svg";
-import photoSVG from "./photo.svg";
-import Image from "next/image";
 import Modal1 from "@/components/Modal1";
 import { useModal } from "@/providers/ModalProvider";
-import { PaperPlaneIcon } from "@radix-ui/react-icons";
+import { PaperPlaneIcon, CornersIcon } from "@radix-ui/react-icons";
 
 export default function NavBar() {
   const { open } = useModal();
@@ -24,7 +21,7 @@ export default function NavBar() {
         <PaperPlaneIcon />
       </Button>
       <Button size="3" variant="outline" color="indigo" radius="full" style={{ flexGrow: 1 }}>
-        <Image src={photoSVG} alt="Photo" />
+        <CornersIcon style={{ width: 20, height: 20 }} />
       </Button>
     </Flex>
   );
