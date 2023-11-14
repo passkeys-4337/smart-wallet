@@ -9,19 +9,16 @@ const css: CSSProperties = {
 };
 
 export default function Balance() {
-  const KEY_ID = "0x9e925f1ff5b39500f805ff205534b589c72603c740b3de6975511818095eec36";
-
-  const { balance, getBalance } = useBalance();
-
-  useEffect(() => {
-    getBalance(KEY_ID);
-    console.log("balance", balance);
-  }, [balance, getBalance]);
+  const { balance } = useBalance();
+  let [intBalance, decimals] = balance.toFixed(2).split(".");
 
   return (
-    <Flex style={css} direction="column">
-      <Text highContrast={true} color="green" weight="bold" size="8">
-        $ {balance.toFixed(2)}
+    <Flex style={css} direction="row" justify="center">
+      <Text highContrast={true} weight="bold" size="8">
+        ${intBalance}
+      </Text>
+      <Text highContrast={true} color="sky" weight="bold" size="6">
+        .{decimals}
       </Text>
     </Flex>
   );
