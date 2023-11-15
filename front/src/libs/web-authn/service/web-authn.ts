@@ -66,8 +66,8 @@ export class WebAuthn {
     const options: PublicKeyCredentialCreationOptions = {
       timeout: 60000,
       rp: {
-        name: "hocuspocusxyz",
-        id: "f445-2001-861-8ac1-ad50-b08d-6c0b-7168-132a.ngrok-free.app",
+        name: "passkeys-4337/smart-wallet",
+        id: process.env.NEXT_PUBLIC_RP_DOMAIN || "localhost",
       },
       user: {
         id: this._generateRandomBytes(),
@@ -127,7 +127,7 @@ export class WebAuthn {
       challenge: challenge
         ? Buffer.from(challenge.slice(2), "hex")
         : Uint8Array.from("random-challenge", (c) => c.charCodeAt(0)),
-      rpId: "f445-2001-861-8ac1-ad50-b08d-6c0b-7168-132a.ngrok-free.app",
+      rpId: process.env.NEXT_PUBLIC_RP_DOMAIN || "localhost",
       userVerification: "preferred",
     } as PublicKeyCredentialRequestOptions;
 

@@ -8,23 +8,20 @@ const useTxHook = () => {
   const [txs, setTxs] = useState<Array<Log> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { keyId } = useMe();
+  const { me } = useMe();
 
-  const getLastTxs = useCallback(
-    async (keyId: Hex) => {
-      setLoading(true);
-      const res = await fetch(`/api/users/${keyId}/txs`);
-      const resJson = await res.json();
-      setTxs(resJson.logs);
-      setLoading(false);
-    },
-    [keyId],
-  );
+  const getLastTxs = useCallback(async (keyId: Hex) => {
+    setLoading(true);
+    const res = await fetch(`/api/users/${keyId}/txs`);
+    const resJson = await res.json();
+    setTxs(resJson.logs);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (!keyId) return;
-    getLastTxs(keyId);
-  }, [keyId, getLastTxs]);
+    if (!me?.keyId) return;
+    getLastTxs(me.keyId);
+  }, [me?.keyId, getLastTxs]);
 
   useEffect(() => {}, [txs]);
 

@@ -22,12 +22,7 @@ export type SmartWalletClient<chain extends Chain | undefined = Chain | undefine
 > &
   PublicClient;
 
-export const createSmartWalletClient = <
-  transport extends Transport,
-  chain extends Chain | undefined = undefined,
->(
-  parameters: PublicClientConfig<transport, chain>,
-): SmartWalletClient => {
+export const createSmartWalletClient = (parameters: PublicClientConfig): SmartWalletClient => {
   const { key = "public", name = "Smart Wallet Client" } = parameters;
   const client = createPublicClient({
     ...parameters,
@@ -39,7 +34,6 @@ export const createSmartWalletClient = <
 
 class SmartWallet {
   private _client: SmartWalletClient;
-  private static _instance: SmartWallet;
   private _isInitiated: boolean = false;
 
   constructor() {

@@ -19,7 +19,7 @@ export type SmartWalletActions = {
   getUserOperationReceipt: (args: any) => Promise<GetUserOperationReceiptReturnType>;
   getIsValidSignature: (args: any) => Promise<GetIsValidSignatureReturnType>;
   waitForUserOperationReceipt: (args: any) => Promise<GetUserOperationReceiptReturnType>;
-} & PublicActions;
+};
 
 export function smartWalletActions(client: Client): SmartWalletActions {
   return {
