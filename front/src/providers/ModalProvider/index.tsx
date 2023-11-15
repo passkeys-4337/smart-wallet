@@ -101,11 +101,15 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
     setIsPortalMounted(true);
   }, []);
 
-  const radixElement = document.getElementsByClassName("radix-themes")[0];
+  let radixElement: HTMLElement | null = null;
+  if (isPortalMounted) {
+    radixElement = document.getElementsByClassName("radix-themes")[0] as HTMLElement;
+  }
+
   return (
     <ModalContext.Provider value={modalValue}>
       {children}
-      {isPortalMounted && (
+      {isPortalMounted && radixElement && (
         <PortalContainer $isOpen={modalValue.isOpen} container={radixElement as HTMLElement}>
           <Overlay $isOpen={modalValue.isBackdrop} onClick={() => modalValue.close()} />
           <Modal $isOpen={modalValue.isOpen}>{modalValue.content}</Modal>

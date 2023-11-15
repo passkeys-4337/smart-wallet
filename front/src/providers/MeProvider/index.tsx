@@ -18,9 +18,7 @@ export type Me = {
 function useMeHook() {
   const [isLoading, setIsLoading] = useState(false);
   const [me, setMe] = useState<Me | null>(null);
-  const [isReturning, setIsReturning] = useState(
-    Boolean(localStorage.getItem("hocuspocus.returning")),
-  );
+  const [isReturning, setIsReturning] = useState(false);
 
   function disconnect() {
     localStorage.removeItem("hocuspocus.me");
@@ -93,6 +91,15 @@ function useMeHook() {
     }
     setMe(JSON.parse(me));
   }, []);
+
+  useEffect(() => {
+    const returning = localStorage.getItem("hocuspocus.returning");
+    if (!returning) {
+      return;
+    }
+    setIsReturning(true);
+  }, []);
+
   return {
     isLoading,
     me,
