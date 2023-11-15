@@ -127,7 +127,7 @@ export class WebAuthn {
       challenge: challenge
         ? Buffer.from(challenge.slice(2), "hex")
         : Uint8Array.from("random-challenge", (c) => c.charCodeAt(0)),
-      rpId: window.location.hostnamepn,
+      rpId: window.location.hostname,
       userVerification: "preferred",
     } as PublicKeyCredentialRequestOptions;
 
