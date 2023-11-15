@@ -2,33 +2,28 @@
 
 import OnBoarding from "@/components/OnBoarding";
 import { WebAuthn } from "@/libs/web-authn/service/web-authn";
+import { useMe } from "@/providers/MeProvider";
 import { Button } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
+import Balance from "../Balance";
+import NavBar from "../NavBar";
+import History from "../History";
+import { Text } from "@radix-ui/themes";
 
 export default function Home() {
-  const [signedIn, setSignedIn] = useState(false);
-
-  useEffect(() => {
-    console.log("window", window);
-
-    const user = localStorage.getItem("user");
-    if (user) {
-      setSignedIn(true);
-    }
-  }, []);
-
-  if (signedIn) {
+  const { me, disconnect } = useMe();
+  if (me) {
     return (
-      <div>
-        <h1>Home</h1>
-        <Button
-          onClick={() => {
-            WebAuthn.disconnect();
-            setSignedIn(false);
-          }}
-        >
-          Disconnect
-        </Button>
+      <div style={{ width: "100%" }}>
+        {me?.account && (
+          <Text>
+            {me.account.slice(0, 6)}...{me.account.slice(-4)}
+          </Text>
+        )}
+        <Balance />
+        <NavBar />
+        <History />
+        <Button onClick={disconnect}>Logout</Button>
       </div>
     );
   } else {

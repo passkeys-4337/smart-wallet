@@ -132,7 +132,6 @@ export class WebAuthn {
     } as PublicKeyCredentialRequestOptions;
 
     const credential = await window.navigator.credentials.get({
-      mediation: "conditional",
       publicKey: options,
     });
 
@@ -146,10 +145,12 @@ export class WebAuthn {
         clientDataJSON: ArrayBuffer;
         authenticatorData: ArrayBuffer;
         signature: ArrayBuffer;
+        userHandle: ArrayBuffer;
       };
     };
 
     const utf8Decoder = new TextDecoder("utf-8");
+
     const decodedClientData = utf8Decoder.decode(cred.response.clientDataJSON);
     const clientDataObj = JSON.parse(decodedClientData);
 

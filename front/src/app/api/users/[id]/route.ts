@@ -8,25 +8,12 @@ export async function GET(_req: Request, { params }: { params: { id: Hex } }) {
     return Response.json(JSON.parse(stringify({ error: "id is required" })));
   }
 
-  console.log("id", id);
-  console.log("FACTORY_ADDRESS", FACTORY_ADDRESS);
-  console.log("args", {
-    address: FACTORY_ADDRESS,
-    abi: FACTORY_ABI,
-    functionName: "getUser",
-    args: [BigInt(id)],
-  });
-
-  console.log("PUBLIC_CLIENT", PUBLIC_CLIENT);
-
   const user = await PUBLIC_CLIENT.readContract({
     address: FACTORY_ADDRESS,
     abi: FACTORY_ABI,
     functionName: "getUser",
     args: [BigInt(id)],
   });
-
-  console.log("user", user);
 
   const balance = await PUBLIC_CLIENT.getBalance({ address: user.account });
 

@@ -8,7 +8,7 @@ import { Hex } from "viem";
 function useBalanceHook() {
   // balance in usd
   const [balance, setBalance] = useState<number>(0);
-  const { keyId } = useMe();
+  const { me } = useMe();
 
   const getBalance = useCallback(async (keyId: Hex) => {
     const user = await getUser(keyId);
@@ -19,9 +19,9 @@ function useBalanceHook() {
   }, []);
 
   useEffect(() => {
-    if (!keyId) return;
-    getBalance(keyId);
-  }, [keyId, getBalance]);
+    if (!me?.keyId) return;
+    getBalance(me?.keyId);
+  }, [me, getBalance]);
 
   return {
     balance,

@@ -1,5 +1,5 @@
 import { FACTORY_ABI, FACTORY_ADDRESS } from "@/constants/factory";
-import { Hex, createPublicClient, createWalletClient, http, stringify, zeroAddress } from "viem";
+import { Hex, createPublicClient, createWalletClient, http, toHex, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseGoerli } from "viem/chains";
 
@@ -25,8 +25,11 @@ export async function POST(req: Request) {
     args: [BigInt(id)],
   });
 
+  console.log("id", id);
+  console.log("user", user);
+
   if (user.account !== zeroAddress) {
-    return Response.json(JSON.parse(stringify({ user })));
+    return Response.json(undefined);
   }
 
   const hash = await walletClient.writeContract({
@@ -36,7 +39,17 @@ export async function POST(req: Request) {
     args: [BigInt(id), pubKey],
   });
 
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+  await publicClient.waitForTransactionReceipt({ hash });
 
-  return Response.json(JSON.parse(stringify({ receipt })));
+  const createdUser = await publicClient.readContract({
+    address: FACTORY_ADDRESS,
+    abi: FACTORY_ABI,
+    functionName: "getUser",
+    args: [BigInt(id)],
+  });
+
+  console.log("createdUser", createdUser);
+
+  await publicClient.waitForTransactionReceipt({ hash });
+  return Response.json({ ...createdUser, id: toHex(createdUser.id) });
 }

@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SmartWalletProvider>
                 <WalletConnectProvider>
                   <ThemeProvider attribute="class">
-                    <Theme>
+                    <Theme style={css}>
                       <ModalProvider>{children}</ModalProvider>
                     </Theme>
                   </ThemeProvider>

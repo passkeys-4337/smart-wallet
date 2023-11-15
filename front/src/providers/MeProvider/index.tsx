@@ -1,49 +1,105 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-import { Hex } from "viem";
+import { createContext, useContext, useEffect, useState } from "react";
+import { Address, Hex, toHex } from "viem";
 import { WebAuthn } from "@/libs/web-authn/service/web-authn";
+import { saveUser } from "@/libs/factory";
+import { getUser } from "@/libs/factory/getUser";
 
-type Me = {
+export type Me = {
+  account: Address;
   keyId: Hex;
+  pubKey: {
+    x: Hex;
+    y: Hex;
+  };
 };
 
 function useMeHook() {
   const [isLoading, setIsLoading] = useState(false);
   const [me, setMe] = useState<Me | null>(null);
+  const [isReturning, setIsReturning] = useState(
+    Boolean(localStorage.getItem("hocuspocus.returning")),
+  );
 
   function disconnect() {
-    localStorage.removeItem("me");
+    localStorage.removeItem("hocuspocus.me");
     setMe(null);
   }
 
   async function create(username: string) {
     setIsLoading(true);
-    // const { rawId, pubKey } = await WebAuthn.create({ username });
+    try {
+      const credential = await WebAuthn.create({ username });
 
-    // localStorage.setItem(
-    //   "user",
-    //   JSON.stringify({
-    //     id: toHex(new Uint8Array(cred.rawId)),
-    //     username,
-    //     address: "0x000",
-    //   }),
-    // );
+      if (!credential) {
+        return;
+      }
+      const user = await saveUser({
+        id: credential.rawId,
+        pubKey: credential.pubKey,
+      });
 
-    localStorage.setItem(
-      "hasWebAuthn",
-      JSON.stringify({
-        hasWebAuthn: true,
-      }),
-    );
+      const me = {
+        keyId: user.id as Hex,
+        pubKey: user.pubKey,
+        account: user.account,
+      };
+
+      if (me === undefined) {
+        console.log("error while saving user");
+        return;
+      }
+      localStorage.setItem("hocuspocus.me", JSON.stringify(me));
+      localStorage.setItem("hocuspocus.returning", "true");
+      setIsReturning(true);
+      setMe(me);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  function get() {}
+  async function get() {
+    setIsLoading(true);
+    try {
+      const credential = await WebAuthn.get();
+      if (!credential) {
+        return;
+      }
+      const user = await getUser(credential.rawId);
+      const me = {
+        keyId: user.id as Hex,
+        pubKey: user.pubKey,
+        account: user.account,
+      };
 
+      localStorage.setItem("hocuspocus.me", JSON.stringify(me));
+      localStorage.setItem("hocuspocus.returning", "true");
+      setIsReturning(true);
+      setMe(me);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const me = localStorage.getItem("hocuspocus.me");
+    if (!me) {
+      return;
+    }
+    setMe(JSON.parse(me));
+  }, []);
   return {
-    // TODO: replace this with the keyId provided by the auth context
-    // this is the keyId for bigq
-    keyId: "0x9e925f1ff5b39500f805ff205534b589c72603c740b3de6975511818095eec36" as Hex,
+    isLoading,
+    me,
+    returning: isReturning,
+    create,
+    get,
+    disconnect,
   };
 }
 

@@ -1,5 +1,7 @@
 import { WebAuthn } from "@/libs/web-authn/service/web-authn";
-import { Button, Flex, TextField } from "@radix-ui/themes";
+import { useMe } from "@/providers/MeProvider";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { Button, Flex, Link, TextField } from "@radix-ui/themes";
 import { CSSProperties, useEffect, useState } from "react";
 
 const css: CSSProperties = {
@@ -20,46 +22,41 @@ const cssBtn: CSSProperties = {
 
 export default function OnBoarding() {
   const [username, setUsername] = useState("");
+  const { create, get, returning, isLoading } = useMe();
 
-  useEffect(() => {
-    WebAuthn.isConditional();
-  }, []);
+  const [createForm, setCreateForm] = useState(!returning);
 
-  async function test() {
-    if (window.PublicKeyCredential) {
-      if (PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-        const result = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-        console.log("isUserVerifyingPlatformAuthenticatorAvailable", result);
-      } else {
-        console.log("isUserVerifyingPlatformAuthenticatorAvailable not supported");
-      }
-    } else {
-      console.log("PublicKeyCredential not supported");
-    }
+  if (!createForm) {
+    return (
+      <Flex style={css} align="center" justify="center" direction="column">
+        {isLoading && <ReloadIcon className="spinner" />}
+        {!isLoading && <Button onClick={() => get()}> Sign In</Button>}
+        {!isLoading && <Link onClick={() => setCreateForm(true)}>or create a new account</Link>}
+      </Flex>
+    );
   }
 
   return (
     <Flex style={css} align="center" justify="center" direction="column">
-      <Button>
-        <input
-          style={cssBtn}
-          required
-          name="username"
-          id="username"
-          autoComplete="username webauthn"
-        />
-      </Button>
-      Sign In
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          username && WebAuthn.create({ username });
+          username && create(username);
         }}
       >
-        <TextField.Input required value={username} onChange={(e) => setUsername(e.target.value)} />
-        <Button type={"submit"}>CREATE</Button>
+        <TextField.Input
+          required
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="account name"
+          disabled={isLoading}
+        />
+        {!isLoading && <Button type={"submit"}>CREATE</Button>}
+        {isLoading && <ReloadIcon className="spinner" />}
       </form>
-      <Button onClick={test}>test</Button>
+      {!isLoading && (
+        <Link onClick={() => setCreateForm(false)}>or sign in to an existing account</Link>
+      )}
     </Flex>
   );
 }

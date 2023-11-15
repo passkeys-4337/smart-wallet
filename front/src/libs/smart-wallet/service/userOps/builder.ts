@@ -18,7 +18,7 @@ import {
 } from "viem";
 import { UserOperationAsHex, UserOperation, Call } from "@/libs/smart-wallet/service/userOps/types";
 import { DEFAULT_USER_OP } from "@/libs/smart-wallet/service/userOps/constants";
-import { P256Credential, WebAuthn } from "@/libs/webauthn";
+import { P256Credential, WebAuthn } from "@/libs/web-authn";
 import { ENTRYPOINT_ABI, ENTRYPOINT_ADDRESS, FACTORY_ABI, FACTORY_ADDRESS } from "@/constants";
 
 export class UserOpBuilder {
@@ -127,7 +127,7 @@ export class UserOpBuilder {
   }
 
   public async getSignature(msgToSign: Hex): Promise<Hex> {
-    const credentials: P256Credential = (await new WebAuthn().get(msgToSign)) as P256Credential;
+    const credentials: P256Credential = (await WebAuthn.get(msgToSign)) as P256Credential;
 
     const signature = encodePacked(
       ["uint8", "uint48", "bytes"],
