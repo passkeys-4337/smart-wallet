@@ -1,9 +1,10 @@
 "use client";
 
 import { Button, Flex } from "@radix-ui/themes";
-import Modal1 from "@/components/Modal1";
 import { useModal } from "@/providers/ModalProvider";
 import { PaperPlaneIcon, CornersIcon } from "@radix-ui/react-icons";
+import { SendTransaction } from "@/components/SendTransaction";
+import { useEffect } from "react";
 
 export default function NavBar() {
   const { open } = useModal();
@@ -13,14 +14,12 @@ export default function NavBar() {
       <Button
         size="3"
         variant="outline"
-        color="green"
-        radius="full"
         style={{ flexGrow: 1 }}
-        onClick={() => open(<Modal1 />)}
+        onClick={() => open(<SendTransaction />)}
       >
         <PaperPlaneIcon />
       </Button>
-      <Button size="3" variant="outline" color="indigo" radius="full" style={{ flexGrow: 1 }}>
+      <Button size="3" variant="outline" style={{ flexGrow: 1 }}>
         <CornersIcon style={{ width: 20, height: 20 }} />
       </Button>
     </Flex>

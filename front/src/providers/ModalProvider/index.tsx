@@ -17,17 +17,18 @@ const PortalContainer = styled(Portal)<{ $isOpen: Boolean }>`
 `;
 
 const Modal = styled.div<{ $isOpen: Boolean }>`
+  display: flex;
+  direction: column;
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 80svh;
-  border: 5px solid var(--accent-9);
+  padding: 1rem;
+  background-color: var(--color-background);
   border-radius: 10px 10px 0 0;
-  background-color: white;
   transform: ${({ $isOpen }) => ($isOpen ? "translate3d(0, 0, 0)" : "translate3d(0, 100svh, 0)")};
   transition: transform 0.1s ease-in-out;
-  color: black;
 `;
 
 const Overlay = styled.div<{ $isOpen: Boolean }>`
@@ -36,7 +37,6 @@ const Overlay = styled.div<{ $isOpen: Boolean }>`
   left: 0;
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   backdrop-filter: blur(3px);
-  // background-color: rgba(var(--color-selection-root), 0.5);
   width: 100%;
   height: 100svh;
   @media (min-width: 391px) {
