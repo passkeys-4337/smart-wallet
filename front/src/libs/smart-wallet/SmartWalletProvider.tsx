@@ -11,18 +11,12 @@ const SmartWalletContext = React.createContext<UseSmartWallet | null>(null);
 export const useWalletConnect = (): UseSmartWallet => {
   const context = useContext(SmartWalletContext);
   if (!context) {
-    throw new Error(
-      "useSmartWalletHook must be used within a SmartWalletProvider"
-    );
+    throw new Error("useSmartWalletHook must be used within a SmartWalletProvider");
   }
   return context;
 };
 
-export function SmartWalletProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function SmartWalletProvider({ children }: { children: React.ReactNode }) {
   const smartWalletValue = useSmartWalletHook();
   const wagmiConfig = createConfig({
     autoConnect: true,
@@ -31,9 +25,7 @@ export function SmartWalletProvider({
 
   return (
     <WagmiConfig config={wagmiConfig}>
-      <SmartWalletContext.Provider value={smartWalletValue}>
-        {children}
-      </SmartWalletContext.Provider>
+      <SmartWalletContext.Provider value={smartWalletValue}>{children}</SmartWalletContext.Provider>
     </WagmiConfig>
   );
 }

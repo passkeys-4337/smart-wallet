@@ -1,23 +1,22 @@
 "use client";
 
-import { Hex, PublicClient, createPublicClient, http, parseEther } from "viem";
-import { useSendTransaction, useWaitForTransaction } from "wagmi";
-
-import { stringify } from "../utils/stringify";
-import { UserOpBuilder } from "@/libs/smart-wallet/service/userOps";
-import { baseGoerli } from "viem/chains";
-import { SmartWalletProvider } from "@/libs/smart-wallet/SmartWalletProvider";
+import { Chain, EstimateFeesPerGasReturnType, Hex, toHex } from "viem";
 import { smartWallet } from "@/libs/smart-wallet";
-import { useState } from "react";
-import { Link } from "@radix-ui/themes";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { useEffect, useState } from "react";
+import { Flex, Link, TextFieldInput, Button } from "@radix-ui/themes";
+import { UserOpBuilder, emptyHex } from "@/libs/smart-wallet/service/userOps";
+import { useBalance } from "@/providers/BalanceProvider";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useMe } from "@/providers/MeProvider";
 
-const builder = new UserOpBuilder(baseGoerli);
 smartWallet.init();
+const builder = new UserOpBuilder(smartWallet.client.chain as Chain);
 
 export function SendTransaction() {
   const [txReceipt, setTxReceipt] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { me } = useMe();
 
   return (
     <>
@@ -29,33 +28,54 @@ export function SendTransaction() {
           const address = formData?.get("address") as Hex;
           const value = formData?.get("value") as `${number}`;
 
-          const hash = await smartWallet.sendUserOperation({
-            to: address || "0x1878EA9134D500A3cEF3E89589ECA3656EECf48f",
-            value: value || BigInt(11),
+          const { maxFeePerGas, maxPriorityFeePerGas }: EstimateFeesPerGasReturnType =
+            await smartWallet.client.estimateFeesPerGas();
+
+          const userOp = await builder.buildUserOp({
+            calls: [
+              {
+                dest: address || "0x1878EA9134D500A3cEF3E89589ECA3656EECf48f",
+                value: BigInt(value) || BigInt(11),
+                data: emptyHex,
+              },
+            ],
+            maxFeePerGas: maxFeePerGas as bigint,
+            maxPriorityFeePerGas: maxPriorityFeePerGas as bigint,
+            keyId: me?.keyId as Hex,
           });
 
-          console.log("hash", hash);
+          const hash = await smartWallet.sendUserOperation({ userOp });
           const receipt = await smartWallet.waitForUserOperationReceipt({ hash });
           setTxReceipt(receipt);
 
-          console.log("receipt", receipt);
           setIsLoading(false);
         }}
       >
-        <input name="address" placeholder="address" />
-        <input name="value" placeholder="value (ether)" />
-        <button type="submit">Send</button>
+        <Flex direction="column" gap="2" style={{ marginInline: "4rem", marginTop: "2rem" }}>
+          <TextFieldInput name="address" placeholder="address" />
+          <TextFieldInput name="value" placeholder="value (ether)" />
+          <Button type="submit">Send</Button>
+        </Flex>
       </form>
 
-      {isLoading && <LoadingSpinner />}
+      {isLoading && (
+        <Flex justify="center" style={{ marginTop: "1rem" }}>
+          {" "}
+          <ReloadIcon className="spinner" />
+        </Flex>
+      )}
 
       {txReceipt && !isLoading && (
-        <Link
-          href={`https://goerli.basescan.org/tx/${txReceipt.receipt.transactionHash}`}
-          target="_blank"
-        >
-          Tx Link
-        </Link>
+        <>
+          <Flex justify="center" style={{ marginTop: "1rem" }}>
+            <Link
+              href={`https://goerli.basescan.org/tx/${txReceipt.receipt.transactionHash}`}
+              target="_blank"
+            >
+              Tx Link
+            </Link>
+          </Flex>
+        </>
       )}
     </>
   );
