@@ -17,7 +17,11 @@ export type Me = {
 
 function useMeHook() {
   const [isLoading, setIsLoading] = useState(false);
-  const [me, setMe] = useState<Me | null>(null);
+  const [me, setMe] = useState<Me | null>(
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("hocuspocus.me") ?? "null")
+      : null,
+  );
   const [isReturning, setIsReturning] = useState(false);
 
   function disconnect() {
