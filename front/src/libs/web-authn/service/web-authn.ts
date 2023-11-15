@@ -67,7 +67,7 @@ export class WebAuthn {
       timeout: 60000,
       rp: {
         name: "passkeys-4337/smart-wallet",
-        id: process.env.NEXT_PUBLIC_RP_DOMAIN || "localhost",
+        id: window.location.hostname,
       },
       user: {
         id: this._generateRandomBytes(),
@@ -127,7 +127,7 @@ export class WebAuthn {
       challenge: challenge
         ? Buffer.from(challenge.slice(2), "hex")
         : Uint8Array.from("random-challenge", (c) => c.charCodeAt(0)),
-      rpId: process.env.NEXT_PUBLIC_RP_DOMAIN || "localhost",
+      rpId: window.location.hostnamepn,
       userVerification: "preferred",
     } as PublicKeyCredentialRequestOptions;
 
