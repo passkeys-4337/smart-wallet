@@ -1,6 +1,3 @@
-import { stringify } from "viem";
-import fs from "fs";
-
 export async function GET(req: Request) {
   const searchParams = new URL(req.url).searchParams;
   const ids = searchParams.get("ids");
@@ -8,7 +5,7 @@ export async function GET(req: Request) {
 
   const { isCached, priceCached } = getFromCache(ids, currencies);
   if (isCached) {
-    return Response.json(JSON.parse(priceCached));
+    return Response.json({ ethereum: JSON.parse(priceCached).ethereum });
   }
 
   const price = await fetch(
@@ -19,8 +16,10 @@ export async function GET(req: Request) {
 
   saveToCache(ids, currencies, priceJson);
 
-  return Response.json(JSON.parse(stringify(priceJson)));
+  return Response.json({ ethereum: priceJson.ethereum });
 }
+
+const cache = new Map();
 
 function saveToCache(
   ids: string | null,
@@ -28,22 +27,18 @@ function saveToCache(
   priceJson: Response | null,
 ): void {
   const key = `${ids}-${currencies}`;
-  // create cache folder if not exist
-  if (!fs.existsSync("./cache")) {
-    fs.mkdirSync("./cache");
-  }
-  // save to local files
-  fs.writeFileSync(`./cache/${key}.json`, JSON.stringify({ ...priceJson, timestamp: Date.now() }));
+  // save to cache
+  cache.set(key, JSON.stringify({ ...priceJson, timestamp: Date.now() }));
 }
 
 function getFromCache(
   ids: string | null,
   currencies: string | null,
 ): { isCached: boolean; priceCached: string } {
-  const key = `${ids}-${currencies}`;
-  // retrieve from local files
   try {
-    const priceCached = fs.readFileSync(`./cache/${key}.json`, "utf8");
+    const key = `${ids}-${currencies}`;
+    // retrieve from cache
+    const priceCached = cache.get(key);
     const priceCachedJson = JSON.parse(priceCached);
 
     const timestamp = priceCachedJson.timestamp;
