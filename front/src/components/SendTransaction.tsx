@@ -16,7 +16,7 @@ export function SendTransaction() {
   const [txReceipt, setTxReceipt] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { keyId } = useMe();
+  const { me } = useMe();
 
   return (
     <>
@@ -41,7 +41,7 @@ export function SendTransaction() {
             ],
             maxFeePerGas: maxFeePerGas as bigint,
             maxPriorityFeePerGas: maxPriorityFeePerGas as bigint,
-            keyId,
+            keyId: me?.keyId as Hex,
           });
 
           const hash = await smartWallet.sendUserOperation({ userOp });

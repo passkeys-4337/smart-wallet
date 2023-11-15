@@ -13,6 +13,12 @@ export const metadata = {
   title: "HocusPocus XYZ",
 };
 
+const css = {
+  padding: "1rem",
+  minHeight: "calc(100svh - 2rem)",
+  display: "flex",
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -23,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SmartWalletProvider>
                 <WalletConnectProvider>
                   <ThemeProvider attribute="class">
-                    <Theme>
+                    <Theme style={css}>
                       <ModalProvider>{children}</ModalProvider>
                     </Theme>
                   </ThemeProvider>
