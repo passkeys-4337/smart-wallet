@@ -17,10 +17,6 @@ export class WebAuthn {
     return crypto.randomBytes(16);
   }
 
-  public static disconnect() {
-    localStorage.removeItem("user");
-  }
-
   public static isSupportedByBrowser(): boolean {
     console.log(
       "isSupportedByBrowser",
@@ -112,22 +108,6 @@ export class WebAuthn {
     const publicKey = cbor.decode(authData?.credentialPublicKey?.buffer as ArrayBuffer);
     const x = toHex(publicKey.get(-2));
     const y = toHex(publicKey.get(-3));
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        id: toHex(new Uint8Array(cred.rawId)),
-        username,
-        address: "0x000",
-      }),
-    );
-
-    localStorage.setItem(
-      "hasWebAuthn",
-      JSON.stringify({
-        hasWebAuthn: true,
-      }),
-    );
 
     // SAVE PUBKEY TO FACTORY
     return {
