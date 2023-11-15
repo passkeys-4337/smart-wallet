@@ -12,14 +12,14 @@ export default function NavBar() {
   return (
     <Flex justify="center" direction="row" gap="5" style={{ marginInline: "2 rem" }}>
       <Button
-        size="3"
+        size="4"
         variant="outline"
         style={{ flexGrow: 1 }}
         onClick={() => open(<SendTransaction />)}
       >
         <PaperPlaneIcon />
       </Button>
-      <Button size="3" variant="outline" style={{ flexGrow: 1 }}>
+      <Button size="4" variant="outline" style={{ flexGrow: 1 }}>
         <CornersIcon style={{ width: 20, height: 20 }} />
       </Button>
     </Flex>

@@ -120,16 +120,16 @@ export function SendTransaction() {
       {txReceipt && !isLoading && (
         <>
           <Flex direction="column" justify="center" align="center" grow="1" gap="5">
-            <CheckCircledIcon height="50" width="100%" />
+            <CheckCircledIcon height="50" width="100%" color="var(--teal-11)" />
             <Link
               // href={`https://goerli.basescan.org/tx/${txReceipt.receipt.transactionHash}`}
               href={`https://goerli.basescan.org/tx/${"0xfc67bb936e6637388ec01e3f2889615b21ed6cf67a58a82265255435546d4d36"}`}
               target="_blank"
-              style={{ color: "black" }}
+              style={{ textDecoration: "none" }}
             >
-              <Flex direction="row" gap="2">
+              <Flex direction="row" gap="2" style={{ color: "var(--teal-11)" }}>
                 See transaction
-                <ExternalLinkIcon style={{ alignSelf: "center" }} />
+                <ExternalLinkIcon style={{ alignSelf: "center", color: "var(--teal-11)" }} />
               </Flex>
             </Link>
           </Flex>

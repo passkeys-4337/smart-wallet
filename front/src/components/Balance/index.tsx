@@ -5,7 +5,7 @@ import { Flex, Text } from "@radix-ui/themes";
 import { CSSProperties, useEffect } from "react";
 
 const css: CSSProperties = {
-  margin: "1rem",
+  padding: "2.5rem 0",
 };
 
 export default function Balance() {
@@ -14,10 +14,10 @@ export default function Balance() {
 
   return (
     <Flex style={css} direction="row" justify="center">
-      <Text highContrast={true} weight="bold" size="8">
+      <Text highContrast={true} weight="bold" size="9">
         ${intBalance}
       </Text>
-      <Text highContrast={true} color="sky" weight="bold" size="6">
+      <Text highContrast={true} weight="bold" size="6" style={{ color: "var(--accent-12)" }}>
         .{decimals}
       </Text>
     </Flex>
