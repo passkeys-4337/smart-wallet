@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { Address, Hex, toHex } from "viem";
+import { Address, Hex } from "viem";
 import { WebAuthn } from "@/libs/web-authn/service/web-authn";
 import { saveUser } from "@/libs/factory";
 import { getUser } from "@/libs/factory/getUser";
@@ -17,12 +17,9 @@ export type Me = {
 
 function useMeHook() {
   const [isLoading, setIsLoading] = useState(false);
-  const [me, setMe] = useState<Me | null>(
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("hocuspocus.me") ?? "null")
-      : null,
-  );
+  const [me, setMe] = useState<Me | null>();
   const [isReturning, setIsReturning] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   function disconnect() {
     localStorage.removeItem("hocuspocus.me");
@@ -90,22 +87,23 @@ function useMeHook() {
 
   useEffect(() => {
     const me = localStorage.getItem("hocuspocus.me");
-    if (!me) {
-      return;
-    }
-    setMe(JSON.parse(me));
-  }, []);
-
-  useEffect(() => {
     const returning = localStorage.getItem("hocuspocus.returning");
-    if (!returning) {
-      return;
+    if (me) {
+      try {
+        setMe(JSON.parse(me));
+      } catch (e) {
+        console.log("error while parsing me");
+      }
     }
-    setIsReturning(true);
+    if (returning === "true") {
+      setIsReturning(true);
+    }
+    setIsMounted(true);
   }, []);
 
   return {
     isLoading,
+    isMounted,
     me,
     returning: isReturning,
     create,

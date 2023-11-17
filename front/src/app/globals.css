@@ -15,13 +15,15 @@ body {
   min-height: 100svh;
   margin: 0 auto;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (min-width: 391px) {
   body {
-    margin: 20px auto;
+    margin: 2rem auto;
     border-radius: 20px;
-    min-height: calc(100svh - 40px);
+    min-height: calc(100svh - 4rem);
     overflow: hidden;
   }
 }
@@ -33,10 +35,4 @@ body {
   to {
     transform: rotate(360deg);
   }
-}
-
-.spinner {
-  width: 120;
-  height: 120;
-  animation: spin 1s linear infinite;
 }

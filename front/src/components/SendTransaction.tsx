@@ -18,6 +18,7 @@ import { UserOpBuilder, emptyHex } from "@/libs/smart-wallet/service/userOps";
 import { useBalance } from "@/providers/BalanceProvider";
 import { CheckCircledIcon, CheckIcon, ExternalLinkIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useMe } from "@/providers/MeProvider";
+import Spinner from "./Spinner";
 
 smartWallet.init();
 const builder = new UserOpBuilder(smartWallet.client.chain as Chain);
@@ -25,7 +26,6 @@ const builder = new UserOpBuilder(smartWallet.client.chain as Chain);
 export function SendTransaction() {
   const [txReceipt, setTxReceipt] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-
   const { me } = useMe();
   const { balance } = useBalance();
 
@@ -110,7 +110,7 @@ export function SendTransaction() {
 
       {isLoading && (
         <Flex direction="column" justify="center" align="center" grow="1" gap="5">
-          <ReloadIcon height="30" width="100%" className="spinner" />
+          <Spinner />
           <Text size="2" weight="bold">
             Sending transaction...
           </Text>
