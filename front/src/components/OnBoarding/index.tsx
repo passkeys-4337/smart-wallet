@@ -1,10 +1,11 @@
 import { useMe } from "@/providers/MeProvider";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { Button, Flex, Link, TextField, IconButton } from "@radix-ui/themes";
+import { Button, Flex, Link, TextField, IconButton, Text } from "@radix-ui/themes";
 import { useState } from "react";
 import ThemeButton from "../ThemeButton";
 import LogoAnimated from "../LogoAnimated";
 import Spinner from "../Spinner";
+import BaseLogo from "../BaseLogo";
 
 export default function OnBoarding() {
   const [username, setUsername] = useState("");
@@ -18,26 +19,24 @@ export default function OnBoarding() {
       direction="column"
       style={{ position: "relative", width: "100%", gap: "2rem" }}
     >
-      <ThemeButton
-        style={{
-          position: "absolute",
-          top: "0rem",
-          right: "0rem",
-        }}
-      />
-      <IconButton
-        style={{ position: "absolute", top: "0rem", left: "0rem" }}
-        onClick={() => window.open("https://github.com/passkeys-4337/smart-wallet", "_blank")}
-        variant="soft"
-      >
-        <GitHubLogoIcon />
-      </IconButton>
-      <LogoAnimated
-        style={{
-          transform: "translateY(3rem)",
-          width: "240px",
-        }}
-      />
+      <Flex justify={"between"} align={"baseline"} width={"100%"}>
+        <IconButton
+          onClick={() => window.open("https://github.com/passkeys-4337/smart-wallet", "_blank")}
+          variant="soft"
+        >
+          <GitHubLogoIcon />
+        </IconButton>
+        <Flex
+          gap={"1"}
+          style={{ width: "100%", color: "var(--gray-8)" }}
+          align={"center"}
+          justify={"center"}
+        >
+          <Text size={"2"}>Build for</Text>
+          <BaseLogo style={{ fill: "var(--gray-8)", width: "60px" }} />
+        </Flex>
+        <ThemeButton />
+      </Flex>
 
       {isLoading && <Spinner />}
 
@@ -62,37 +61,61 @@ export default function OnBoarding() {
             }
           }}
         >
+          <LogoAnimated
+            style={{
+              width: "240px",
+            }}
+          />
           {createForm && (
-            <TextField.Input
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Name"
-              disabled={isLoading}
-              size={"3"}
-              style={{
-                width: "250px",
-                padding: "0.5rem",
-              }}
-            />
+            <Flex gap={"2"} style={{ width: "250px" }}>
+              <TextField.Input
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Wallet name"
+                disabled={isLoading}
+                size={"3"}
+                style={{
+                  padding: "0.5rem",
+                }}
+              />
+
+              <Button
+                style={{ width: "110px", textAlign: "center" }}
+                variant={"outline"}
+                size={"3"}
+                type={"submit"}
+              >
+                CREATE
+              </Button>
+            </Flex>
           )}
-          <Button style={{ width: "250px" }} variant={"outline"} size={"3"} type={"submit"}>
-            {createForm ? "CREATE ACCOUNT" : "SIGN IN"}
-          </Button>
+          {!createForm && (
+            <Button style={{ width: "250px" }} variant={"outline"} size={"3"} type={"submit"}>
+              LOG IN
+            </Button>
+          )}
         </form>
       )}
 
-      {!createForm && (
-        <Link onClick={() => !isLoading && setCreateForm(true)} size={"2"}>
-          or create a new account
-        </Link>
-      )}
+      <Flex style={{ width: "100%", whiteSpace: "nowrap" }} justify={"end"}>
+        {!createForm && (
+          <Link
+            onClick={() => {
+              !isLoading && setCreateForm(true);
+            }}
+            size={"2"}
+          >
+            or create a new wallet
+          </Link>
+        )}
 
-      {createForm && (
-        <Link onClick={() => !isLoading && setCreateForm(false)} size={"2"}>
-          or sign in with an existing account
-        </Link>
-      )}
+        {createForm && (
+          <Link onClick={() => !isLoading && setCreateForm(false)} size={"2"}>
+            or log in with an existing passkey
+          </Link>
+        )}
+      </Flex>
     </Flex>
   );
 }
