@@ -5,6 +5,7 @@ import { useModal } from "@/providers/ModalProvider";
 import { PaperPlaneIcon, CornersIcon } from "@radix-ui/react-icons";
 import { SendTransaction } from "@/components/SendTransaction";
 import { useEffect } from "react";
+import QrReaderModal from "../QrReaderModal";
 
 export default function NavBar() {
   const { open } = useModal();
@@ -19,7 +20,12 @@ export default function NavBar() {
       >
         <PaperPlaneIcon />
       </Button>
-      <Button size="4" variant="outline" style={{ flexGrow: 1 }}>
+      <Button
+        size="4"
+        variant="outline"
+        style={{ flexGrow: 1 }}
+        onClick={() => open(<QrReaderModal />)}
+      >
         <CornersIcon style={{ width: 20, height: 20 }} />
       </Button>
     </Flex>
