@@ -28,7 +28,8 @@ const Modal = styled.div<{ $isOpen: Boolean }>`
   background-color: var(--color-background);
   border-radius: 10px 10px 0 0;
   transform: ${({ $isOpen }) => ($isOpen ? "translate3d(0, 0, 0)" : "translate3d(0, 100svh, 0)")};
-  transition: transform 0.1s ease-in-out;
+  transition: transform 0.2s ease-in-out;
+  z-index: 100;
 `;
 
 const Overlay = styled.div<{ $isOpen: Boolean }>`
@@ -44,6 +45,7 @@ const Overlay = styled.div<{ $isOpen: Boolean }>`
   }
   visibility: ${({ $isOpen }) => ($isOpen ? "visible" : "hidden")};
   transition: opacity 0.1s ease-in-out;
+  z-index: 99;
 `;
 
 function useModalHook() {

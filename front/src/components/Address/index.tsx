@@ -1,5 +1,5 @@
 import { useMe } from "@/providers/MeProvider";
-import { CopyIcon } from "@radix-ui/react-icons";
+import { AvatarIcon } from "@radix-ui/react-icons";
 import { Button, Tooltip } from "@radix-ui/themes";
 import { CSSProperties, useState } from "react";
 
@@ -26,7 +26,7 @@ export default function Address(props: Props) {
         }}
         style={{ ...props.style, display: "flex", alignItems: "center", gap: "6px" }}
       >
-        <CopyIcon />
+        <AvatarIcon fill="red" />
         {me?.account.slice(0, 6)}...{me?.account.slice(-4)}
       </Button>
     </Tooltip>
