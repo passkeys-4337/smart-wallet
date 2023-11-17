@@ -8,10 +8,19 @@ import { ModalProvider } from "@/providers/ModalProvider";
 import { BalanceProvider } from "@/providers/BalanceProvider";
 import { MeProvider } from "@/providers/MeProvider";
 import { TransactionProvider } from "@/providers/TransactionProvider";
+import { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Smart Wallet",
   description: "Passkeys X ERC-4337",
+  viewport: {
+    width: "device-width",
+    height: "device-height",
+    initialScale: 1,
+    minimumScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 const css = {
