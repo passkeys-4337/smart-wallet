@@ -2,14 +2,14 @@
 
 import OnBoarding from "@/components/OnBoarding";
 import { useMe } from "@/providers/MeProvider";
-import { Button, Flex } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import Balance from "../Balance";
 import NavBar from "../NavBar";
 import History from "../History";
 import TopBar from "../TopBar";
 
 export default function Home() {
-  const { me, disconnect, isMounted } = useMe();
+  const { me, isMounted } = useMe();
 
   if (!isMounted) return null;
 
@@ -20,7 +20,6 @@ export default function Home() {
         <Balance />
         <NavBar />
         <History />
-        <Button onClick={disconnect}>Logout</Button>
       </Flex>
     );
   } else {

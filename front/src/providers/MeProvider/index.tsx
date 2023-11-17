@@ -5,6 +5,7 @@ import { Address, Hex } from "viem";
 import { WebAuthn } from "@/libs/web-authn/service/web-authn";
 import { saveUser } from "@/libs/factory";
 import { getUser } from "@/libs/factory/getUser";
+import { walletConnect } from "@/libs/wallet-connect/service/wallet-connect";
 
 export type Me = {
   account: Address;
@@ -51,6 +52,7 @@ function useMeHook() {
       }
       localStorage.setItem("hocuspocus.me", JSON.stringify(me));
       localStorage.setItem("hocuspocus.returning", "true");
+      walletConnect.smartWalletAddress = me.account;
       setIsReturning(true);
       setMe(me);
     } catch (e) {
@@ -76,6 +78,7 @@ function useMeHook() {
 
       localStorage.setItem("hocuspocus.me", JSON.stringify(me));
       localStorage.setItem("hocuspocus.returning", "true");
+      walletConnect.smartWalletAddress = me.account;
       setIsReturning(true);
       setMe(me);
     } catch (e) {

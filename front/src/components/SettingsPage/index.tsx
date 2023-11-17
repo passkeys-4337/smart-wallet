@@ -10,11 +10,13 @@ import Link from "next/link";
 import { useWalletConnect } from "@/libs/wallet-connect";
 import SessionCard from "../SessionCard";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
   const { me, disconnect, isMounted } = useMe();
   const { sessions } = useWalletConnect();
   const [isCopied, setIsCopied] = useState(false);
+  const router = useRouter();
 
   if (!isMounted) return null;
 
@@ -53,7 +55,10 @@ export default function SettingsPage() {
             </Tooltip>
             <Button
               size={"3"}
-              onClick={disconnect}
+              onClick={() => {
+                disconnect();
+                router.push("/");
+              }}
               style={{ width: "110px" }}
               color={"red"}
               variant="outline"

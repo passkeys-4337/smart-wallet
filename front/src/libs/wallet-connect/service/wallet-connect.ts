@@ -1,16 +1,9 @@
 import { Core } from "@walletconnect/core";
 import { EventEmitter } from "events";
-import {
-  Web3Wallet,
-  Web3WalletTypes,
-  IWeb3Wallet,
-} from "@walletconnect/web3wallet";
+import { Web3Wallet, Web3WalletTypes, IWeb3Wallet } from "@walletconnect/web3wallet";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { SessionTypes } from "@walletconnect/types";
-import {
-  EIP155_CHAINS,
-  EIP155Method,
-} from "@/libs/wallet-connect/config/EIP155";
+import { EIP155_CHAINS, EIP155Method } from "@/libs/wallet-connect/config/EIP155";
 import { EthEvent, WCChains } from "@/libs/wallet-connect/config/common";
 import { smartWallet } from "@/libs/smart-wallet/service/smart-wallet";
 
@@ -44,25 +37,27 @@ export interface IPairingRejectedEventPayload {
  * */
 class WalletConnect extends EventEmitter {
   public sessions: Record<string, SessionTypes.Struct> = {};
-  private _smartWalletAddress: string;
+  private _smartWalletAddress: string = "";
   private _web3wallet: IWeb3Wallet | null;
-  private static _instance: WalletConnect;
 
   constructor() {
     super();
     this.sessions = {};
-    this._smartWalletAddress = "0x938f169352008d35e065F153be53b3D3C07Bcd90";
     this._web3wallet = null;
   }
-
-  public static getInstance(): WalletConnect {
-    if (!this._instance) {
-      this._instance = new this();
-    }
-    return this._instance;
+  public set smartWalletAddress(address: string) {
+    this._smartWalletAddress = address;
   }
 
-  public async init(walletConnectConfig: IWalletConnectConfig) {
+  public async init({
+    walletConnectConfig,
+    smartWalletAddress,
+  }: {
+    walletConnectConfig: IWalletConnectConfig;
+    smartWalletAddress: string;
+  }): Promise<void> {
+    this._smartWalletAddress = smartWalletAddress;
+
     const core = new Core({
       projectId: walletConnectConfig.projectId,
       // TODO: optimize relayerRegionURL base on user's location
@@ -75,24 +70,16 @@ class WalletConnect extends EventEmitter {
     });
 
     if (!this._web3wallet) throw new Error("Web3Wallet is not initialized");
-    this._web3wallet.on("session_proposal", (event) =>
-      this._onSessionProposal(event)
-    );
-    this._web3wallet.on("session_request", (event) =>
-      this._onSessionRequest(event)
-    );
+    this._web3wallet.on("session_proposal", (event) => this._onSessionProposal(event));
+    this._web3wallet.on("session_request", (event) => this._onSessionRequest(event));
     this._web3wallet.on("session_delete", () => this._onSessionDelete());
     this._setSessions();
   }
 
   public unsubscribe(): void {
     if (!this._web3wallet) return;
-    this._web3wallet.off("session_proposal", (event) =>
-      this._onSessionProposal(event)
-    );
-    this._web3wallet.off("session_request", (event) =>
-      this._onSessionRequest(event)
-    );
+    this._web3wallet.off("session_proposal", (event) => this._onSessionProposal(event));
+    this._web3wallet.off("session_request", (event) => this._onSessionRequest(event));
     this._web3wallet.off("session_delete", () => this._onSessionDelete());
   }
 
@@ -144,10 +131,7 @@ class WalletConnect extends EventEmitter {
     this._setSessions();
   }
 
-  private async _onSessionProposal({
-    id,
-    params,
-  }: Web3WalletTypes.SessionProposal) {
+  private async _onSessionProposal({ id, params }: Web3WalletTypes.SessionProposal) {
     if (!this._web3wallet) return;
 
     try {
@@ -182,9 +166,7 @@ class WalletConnect extends EventEmitter {
     }
   }
 
-  private async _onSessionRequest(
-    event: Web3WalletTypes.SessionRequest
-  ): Promise<void> {
+  private async _onSessionRequest(event: Web3WalletTypes.SessionRequest): Promise<void> {
     if (!this._web3wallet) return;
     const { topic, params, id } = event;
     const { request } = params;
@@ -242,4 +224,4 @@ class WalletConnect extends EventEmitter {
   }
 }
 
-export const walletConnect = WalletConnect.getInstance();
+export const walletConnect = new WalletConnect();
