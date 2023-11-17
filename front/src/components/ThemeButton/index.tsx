@@ -1,7 +1,7 @@
 "use client";
 
 import { SunIcon, MoonIcon } from "@radix-ui/react-icons";
-import { Button } from "@radix-ui/themes";
+import { IconButton } from "@radix-ui/themes";
 import { useTheme } from "next-themes";
 import { CSSProperties, useEffect, useState } from "react";
 
@@ -19,7 +19,7 @@ export default function ThemeButton({ style }: Props) {
   if (!mounted) return null;
 
   return (
-    <Button
+    <IconButton
       style={style}
       variant={"soft"}
       onClick={() => {
@@ -42,6 +42,6 @@ export default function ThemeButton({ style }: Props) {
       ) : (
         <MoonIcon />
       )}
-    </Button>
+    </IconButton>
   );
 }

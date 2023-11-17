@@ -10,12 +10,14 @@ import { MeProvider } from "@/providers/MeProvider";
 import { TransactionProvider } from "@/providers/TransactionProvider";
 
 export const metadata = {
-  title: "HocusPocus XYZ",
+  title: "Smart Wallet",
+  description: "Passkeys X ERC-4337",
 };
 
 const css = {
   padding: "1rem",
-  minHeight: "calc(100svh - 2rem)",
+  flexGrow: 1,
+  flexBasis: "100%",
   display: "flex",
 };
 
@@ -29,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SmartWalletProvider>
                 <WalletConnectProvider>
                   <ThemeProvider attribute="class">
-                    <Theme style={css} radius={"full"} accentColor={"red"}>
+                    <Theme style={css} radius={"full"} accentColor={"teal"}>
                       <ModalProvider>{children}</ModalProvider>
                     </Theme>
                   </ThemeProvider>

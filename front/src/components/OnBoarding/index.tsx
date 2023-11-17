@@ -1,141 +1,121 @@
 import { useMe } from "@/providers/MeProvider";
-import { GitHubLogoIcon, ReloadIcon, SunIcon, MoonIcon } from "@radix-ui/react-icons";
-import {
-  Button,
-  Flex,
-  Heading,
-  Link,
-  TextField,
-  Blockquote,
-  Text,
-  Kbd,
-  Switch,
-} from "@radix-ui/themes";
-import { CSSProperties, useEffect, useState } from "react";
-import styled from "@emotion/styled";
-import { useTheme } from "next-themes";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { Button, Flex, Link, TextField, IconButton, Text } from "@radix-ui/themes";
+import { useState } from "react";
 import ThemeButton from "../ThemeButton";
-
-const css: CSSProperties = {
-  flexGrow: 1,
-  gap: "1rem",
-};
-
-const Container = styled(Flex)`
-  position: relative;
-  width: 100%;
-  gap: 2rem;
-  background-color: "red";
-`;
-
-const Hero = styled(Flex)`
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const Title = styled(Heading)`
-  text-align: center;
-`;
+import LogoAnimated from "../LogoAnimated";
+import Spinner from "../Spinner";
+import BaseLogo from "../BaseLogo";
 
 export default function OnBoarding() {
   const [username, setUsername] = useState("");
   const { create, get, returning, isLoading } = useMe();
-
   const [createForm, setCreateForm] = useState(!returning);
 
-  if (!createForm) {
-    return (
-      <Container align="center" justify={"between"} direction="column">
-        <ThemeButton
-          style={{
-            position: "absolute",
-            top: "0rem",
-            right: "0rem",
-          }}
-        />
-        <Hero>
-          <Title as="h1" size={"8"}>
-            Smart Wallet
-          </Title>
-          <Link href="https://github.com/passkeys-4337/smart-wallet">
-            <Kbd size={"6"}>
-              <GitHubLogoIcon style={{ marginRight: ".5rem" }} />
-              passkeys-4337
-            </Kbd>
-          </Link>
-        </Hero>
-
-        {isLoading && <ReloadIcon className="spinner" />}
-        {!isLoading && (
-          <Button style={{ width: "200px" }} variant={"outline"} size={"3"} onClick={() => get()}>
-            SIGN IN
-          </Button>
-        )}
-        <Link onClick={() => !isLoading && setCreateForm(true)} size={"2"}>
-          or create a new account
-        </Link>
-      </Container>
-    );
-  }
-
   return (
-    <Container align="center" justify={"between"} direction="column">
-      <ThemeButton
-        style={{
-          position: "absolute",
-          top: "0rem",
-          right: "0rem",
-        }}
-      />
-      <Hero>
-        <Title as="h1" size={"8"}>
-          Smart Wallet
-        </Title>
-        <Link href="https://github.com/passkeys-4337/smart-wallet">
-          <Kbd size={"6"}>
-            <GitHubLogoIcon style={{ marginRight: ".5rem" }} />
-            passkeys-4337
-          </Kbd>
-        </Link>
-      </Hero>
+    <Flex
+      align="center"
+      justify={"between"}
+      direction="column"
+      style={{ position: "relative", width: "100%", gap: "2rem" }}
+    >
+      <Flex justify={"between"} align={"baseline"} width={"100%"}>
+        <IconButton
+          onClick={() => window.open("https://github.com/passkeys-4337/smart-wallet", "_blank")}
+          variant="soft"
+        >
+          <GitHubLogoIcon />
+        </IconButton>
+        <Flex
+          gap={"1"}
+          style={{ width: "100%", color: "var(--gray-8)" }}
+          align={"center"}
+          justify={"center"}
+        >
+          <Text size={"2"}>Build for</Text>
+          <BaseLogo style={{ fill: "var(--gray-8)", width: "60px" }} />
+        </Flex>
+        <ThemeButton />
+      </Flex>
 
-      <form
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          alignItems: "center",
-        }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          username && create(username);
-        }}
-      >
-        <TextField.Input
-          required
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Name"
-          disabled={isLoading}
-          size={"3"}
-          style={{ width: "200px", padding: "0.5rem" }}
-        />
-        {!isLoading && (
-          <Button style={{ width: "200px" }} variant={"outline"} size={"3"} type={"submit"}>
-            NEW ACCOUNT
-          </Button>
-        )}
-        {isLoading && <ReloadIcon className="spinner" />}
-      </form>
+      {isLoading && <Spinner />}
+
       {!isLoading && (
-        <Link onClick={() => setCreateForm(false)} size={"2"}>
-          or sign in to an existing account
-        </Link>
+        <form
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            alignItems: "center",
+          }}
+          onSubmit={(e) => {
+            if (createForm) {
+              e.preventDefault();
+              username && create(username);
+            }
+
+            if (!createForm) {
+              e.preventDefault();
+              get();
+            }
+          }}
+        >
+          <LogoAnimated
+            style={{
+              width: "240px",
+            }}
+          />
+          {createForm && (
+            <Flex gap={"2"} style={{ width: "250px" }}>
+              <TextField.Input
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Wallet name"
+                disabled={isLoading}
+                size={"3"}
+                style={{
+                  padding: "0.5rem",
+                }}
+              />
+
+              <Button
+                style={{ width: "110px", textAlign: "center" }}
+                variant={"outline"}
+                size={"3"}
+                type={"submit"}
+              >
+                CREATE
+              </Button>
+            </Flex>
+          )}
+          {!createForm && (
+            <Button style={{ width: "250px" }} variant={"outline"} size={"3"} type={"submit"}>
+              LOG IN
+            </Button>
+          )}
+        </form>
       )}
-    </Container>
+
+      <Flex style={{ width: "100%", whiteSpace: "nowrap" }} justify={"end"}>
+        {!createForm && (
+          <Link
+            onClick={() => {
+              !isLoading && setCreateForm(true);
+            }}
+            size={"2"}
+          >
+            or create a new wallet
+          </Link>
+        )}
+
+        {createForm && (
+          <Link onClick={() => !isLoading && setCreateForm(false)} size={"2"}>
+            or log in with an existing passkey
+          </Link>
+        )}
+      </Flex>
+    </Flex>
   );
 }
