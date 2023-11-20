@@ -25,9 +25,6 @@ export async function POST(req: Request) {
     args: [BigInt(id)],
   });
 
-  console.log("id", id);
-  console.log("user", user);
-
   if (user.account !== zeroAddress) {
     return Response.json(undefined);
   }
@@ -47,8 +44,6 @@ export async function POST(req: Request) {
     functionName: "getUser",
     args: [BigInt(id)],
   });
-
-  console.log("createdUser", createdUser);
 
   await publicClient.waitForTransactionReceipt({ hash });
   return Response.json({ ...createdUser, id: toHex(createdUser.id) });

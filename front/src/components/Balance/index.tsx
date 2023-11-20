@@ -9,7 +9,7 @@ const css: CSSProperties = {
 };
 
 export default function Balance() {
-  const { balance } = useBalance();
+  const { balance, refreshBalance } = useBalance();
   let [intBalance, decimals] = balance.toFixed(2).split(".");
 
   return (
