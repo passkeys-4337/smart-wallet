@@ -10,15 +10,19 @@ export default function QrReaderModal() {
   const [input, setInput] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
   const { close } = useModal();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [pairingTopic, setPairingTopic] = useState<string | null>("");
 
   const { pairSession, pairingState, sessions } = useWalletConnect();
   function handleScan(data: string | null) {
     if (data) {
       if (data.startsWith("wc:")) {
+        setIsLoading(true);
         pairSession({
           uri: data,
           onSuccess: (pairingTopic) => {
-            setSuccess(true);
+            // setSuccess(true);
+            setPairingTopic(pairingTopic);
             setTimeout(() => {
               close();
             }, 3000);
@@ -32,7 +36,9 @@ export default function QrReaderModal() {
     }
   }
 
-  const isLoading = Object.values(pairingState).some((element) => element.isLoading);
+  // useEffect(() => {}, [pairingState]);
+
+  // const isLoading = Object.values(pairingState).some((element) => element.isLoading);
 
   if (success) {
     return (

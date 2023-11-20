@@ -208,16 +208,16 @@ export function useWalletConnectHook() {
       }));
 
       await walletConnect.pair(uri);
-      setTimeout(() => {
-        setPairingState((prev) => ({
-          ...prev,
-          [pairingTopic]: {
-            pairingTopic,
-            isLoading: false,
-            error: null,
-          },
-        }));
-      }, 5000);
+      // setTimeout(() => {
+      //   setPairingState((prev) => ({
+      //     ...prev,
+      //     [pairingTopic]: {
+      //       pairingTopic,
+      //       isLoading: false,
+      //       error: null,
+      //     },
+      //   }));
+      // }, 5000);
       onSuccess && onSuccess(pairingTopic);
     } catch (error: any) {
       setPairingState((prev) => ({

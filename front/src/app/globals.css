@@ -11,7 +11,6 @@ html {
 
 body {
   position: relative;
-  max-width: 390px;
   min-height: 100svh;
   margin: 0 auto;
   overflow: hidden;
@@ -19,10 +18,11 @@ body {
   flex-direction: column;
 }
 
-@media (min-width: 391px) {
+@media (min-width: 600px) {
   body {
     margin: 2rem auto;
     border-radius: 20px;
+    max-width: 390px;
     min-height: calc(100svh - 4rem);
     overflow: hidden;
   }
