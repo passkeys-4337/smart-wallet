@@ -9,6 +9,7 @@ import { BalanceProvider } from "@/providers/BalanceProvider";
 import { MeProvider } from "@/providers/MeProvider";
 import { TransactionProvider } from "@/providers/TransactionProvider";
 import { Metadata } from "next";
+import { ModalOnWCEvent } from "@/libs/wallet-connect/ModalOnWCEvent";
 
 export const metadata: Metadata = {
   title: "Smart Wallet",
@@ -41,7 +42,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <WalletConnectProvider>
                   <ThemeProvider attribute="class">
                     <Theme style={css} radius={"full"} accentColor={"red"}>
-                      <ModalProvider>{children}</ModalProvider>
+                      <ModalProvider>
+                        <ModalOnWCEvent>{children}</ModalOnWCEvent>
+                      </ModalProvider>
                     </Theme>
                   </ThemeProvider>
                 </WalletConnectProvider>

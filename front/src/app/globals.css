@@ -19,11 +19,21 @@ body {
 }
 
 @media (min-width: 600px) {
+  html{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+
   body {
-    margin: 2rem auto;
+    margin: auto;
     border-radius: 20px;
-    max-width: 390px;
-    min-height: calc(100svh - 4rem);
+    width: 390px;
+    height: 844px;
+    min-height: 0px;
     overflow: hidden;
   }
 }

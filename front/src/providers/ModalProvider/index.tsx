@@ -12,7 +12,7 @@ const PortalContainer = styled(Portal)<{ isopen: Boolean | undefined }>`
   width: 100%;
   height: 100svh;
   @media (min-width: 600px) {
-    height: calc(100vh - 4rem);
+    height: 844px;
   }
   pointer-events: ${({ isopen }) => (isopen ? "auto" : "none")};
 `;
@@ -32,6 +32,10 @@ const Modal = styled.div<{ $isOpen: Boolean }>`
   transform: ${({ $isOpen }) => ($isOpen ? "translate3d(0, 0, 0)" : "translate3d(0, 100svh, 0)")};
   transition: transform 0.3s ease-in-out;
   z-index: 100;
+
+  @media (min-width: 600px) {
+    height: calc(844px * 0.7);
+  }
 `;
 
 const Overlay = styled.div<{ $isOpen: Boolean }>`
@@ -43,7 +47,7 @@ const Overlay = styled.div<{ $isOpen: Boolean }>`
   width: 100%;
   height: 100svh;
   @media (min-width: 600px) {
-    height: calc(100vh - 4rem);
+    height: 844px;
   }
   visibility: ${({ $isOpen }) => ($isOpen ? "visible" : "hidden")};
   transition: opacity 0.3s ease-in-out;
@@ -59,7 +63,7 @@ const Overlay = styled.div<{ $isOpen: Boolean }>`
     width: 100%;
     height: 100svh;
     @media (min-width: 600px) {
-      height: calc(100vh - 4rem);
+      height: 844px;
     }
   }
 `;
@@ -107,7 +111,7 @@ const ModalContext = React.createContext<UseModalHook | null>(null);
 export const useModal = (): UseModalHook => {
   const context = useContext(ModalContext);
   if (!context) {
-    throw new Error("useModalHook must be used within a ModalHoolProvider");
+    throw new Error("useModalHook must be used within a ModalHookProvider");
   }
   return context;
 };

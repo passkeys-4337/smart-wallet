@@ -3,6 +3,7 @@
  * @url https://chainlist.org
  */
 
+import { Hex } from "viem";
 import { WCChains } from "./common";
 
 /**
@@ -119,3 +120,13 @@ export enum EIP155Method {
   // SwitchChain = "wallet_switchEthereumChain",
   // AddChain = "wallet_addEthereumChain",
 }
+
+export type EthSendTransactionParams = {
+  from: Hex;
+  to: Hex;
+  data: Hex;
+  value?: Hex;
+  gas?: Hex;
+  gasPrice?: Hex;
+  nonce?: Hex;
+};
