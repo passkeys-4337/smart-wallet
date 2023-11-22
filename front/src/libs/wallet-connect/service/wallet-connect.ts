@@ -22,7 +22,7 @@ export enum WCEvent {
   pairingApproved = "pairing_approved",
   pairingRejected = "pairing_rejected",
   EthSendTransaction = EIP155Method.EthSendTransaction,
-  EthSign = EIP155Method.EthSign,
+  MethodNotSupported = "method_not_supported",
 }
 
 export interface IPairingApprovedEventPayload {
@@ -212,21 +212,11 @@ class WalletConnect extends EventEmitter {
 
   private _jsonRpcEventRouter(method: string, params: any) {
     switch (method) {
-      case EIP155Method.EthSign:
-        this.emit(WCEvent.EthSendTransaction, params[0] as EthSendTransactionParams);
-      // case EIP155Method.PersonalSign:
-      // // smartWallet.getIsValidSignature(params);
-
-      // case EIP155Method.SignTypedData:
-      // case EIP155Method.SignTypedDataV3:
-      // case EIP155Method.SignTypedDataV4:
-      // // do something
-
       case EIP155Method.EthSendTransaction:
         this.emit(WCEvent.EthSendTransaction, params[0] as EthSendTransactionParams);
 
       default:
-        // do something
+        this.emit(WCEvent.MethodNotSupported, method);
         return null;
     }
   }
