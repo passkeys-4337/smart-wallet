@@ -5,16 +5,16 @@ import { Portal, Box } from "@radix-ui/themes";
 import styled from "@emotion/styled";
 import { useTheme } from "next-themes";
 
-const PortalContainer = styled(Portal)<{ $isOpen: Boolean }>`
+const PortalContainer = styled(Portal)<{ isopen: Boolean | undefined }>`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100svh;
-  @media (min-width: 391px) {
-    height: calc(100vh - 4rem);
+  @media (min-width: 600px) {
+    height: 844px;
   }
-  pointer-events: ${({ $isOpen }) => ($isOpen ? "auto" : "none")};
+  pointer-events: ${({ isopen }) => (isopen ? "auto" : "none")};
 `;
 
 const Modal = styled.div<{ $isOpen: Boolean }>`
@@ -32,6 +32,10 @@ const Modal = styled.div<{ $isOpen: Boolean }>`
   transform: ${({ $isOpen }) => ($isOpen ? "translate3d(0, 0, 0)" : "translate3d(0, 100svh, 0)")};
   transition: transform 0.3s ease-in-out;
   z-index: 100;
+
+  @media (min-width: 600px) {
+    height: calc(844px * 0.7);
+  }
 `;
 
 const Overlay = styled.div<{ $isOpen: Boolean }>`
@@ -42,8 +46,8 @@ const Overlay = styled.div<{ $isOpen: Boolean }>`
   backdrop-filter: blur(4px);
   width: 100%;
   height: 100svh;
-  @media (min-width: 391px) {
-    height: calc(100vh - 40px);
+  @media (min-width: 600px) {
+    height: 844px;
   }
   visibility: ${({ $isOpen }) => ($isOpen ? "visible" : "hidden")};
   transition: opacity 0.3s ease-in-out;
@@ -58,8 +62,8 @@ const Overlay = styled.div<{ $isOpen: Boolean }>`
     left: 0;
     width: 100%;
     height: 100svh;
-    @media (min-width: 391px) {
-      height: calc(100vh - 40px);
+    @media (min-width: 600px) {
+      height: 844px;
     }
   }
 `;
@@ -107,7 +111,7 @@ const ModalContext = React.createContext<UseModalHook | null>(null);
 export const useModal = (): UseModalHook => {
   const context = useContext(ModalContext);
   if (!context) {
-    throw new Error("useModalHook must be used within a ModalHoolProvider");
+    throw new Error("useModalHook must be used within a ModalHookProvider");
   }
   return context;
 };
@@ -129,7 +133,10 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
     <ModalContext.Provider value={modalValue}>
       {children}
       {isPortalMounted && radixElement && (
-        <PortalContainer $isOpen={modalValue.isOpen} container={radixElement as HTMLElement}>
+        <PortalContainer
+          isopen={modalValue.isOpen ? true : undefined}
+          container={radixElement as HTMLElement}
+        >
           <Overlay $isOpen={modalValue.isBackdrop} onClick={() => modalValue.close()} />
           <Modal
             $isOpen={modalValue.isOpen}

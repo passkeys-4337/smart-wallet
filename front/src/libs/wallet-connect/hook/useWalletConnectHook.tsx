@@ -9,6 +9,9 @@ import { SessionTypes } from "@walletconnect/types";
 import { WC_CONFIG } from "../config";
 import { on } from "events";
 import { useMe } from "@/providers/MeProvider";
+import { EthSendTransactionParams } from "../config/EIP155";
+import { useModal } from "@/providers/ModalProvider";
+import WCSendTransactionModal from "@/components/WCSendTransactionModal";
 
 interface ISessions {
   [topic: string]: SessionTypes.Struct;
@@ -52,8 +55,12 @@ function formatSessionsToReactSessions(sessions: ISessions): IWCReactSessions {
       ...acc,
       [topic]: {
         session,
-        isLoading: false,
-        error: null,
+        disconnectIsLoading: false,
+        extendIsLoading: false,
+        updateIsLoading: false,
+        disconnectError: null,
+        extendError: null,
+        updateError: null,
       },
     }),
     {},
@@ -125,7 +132,7 @@ export function useWalletConnectHook() {
   const [isInitLoading, setIsInitLoading] = useState(false);
   const [isInitReady, setIsInitReady] = useState(false);
   const [initError, setInitError] = useState<Error | null>(null);
-  const [pairingState, setPairingState] = useState<Record<string, IPairingState>>({});
+  const [pairingStates, setPairingStates] = useState<Record<string, IPairingState>>({});
   const [sessions, dispatch] = useReducer(reducer, {});
   const { me } = useMe();
 
@@ -157,7 +164,7 @@ export function useWalletConnectHook() {
       dispatch({ type: "SET_SESSIONS", sessions: newSessions });
     };
     const handlePairingApproved = ({ pairingTopic }: IPairingApprovedEventPayload) => {
-      setPairingState((prev) => ({
+      setPairingStates((prev) => ({
         ...prev,
         [pairingTopic]: {
           pairingTopic,
@@ -167,7 +174,7 @@ export function useWalletConnectHook() {
       }));
     };
     const handlePairingRejected = ({ pairingTopic, msg }: IPairingRejectedEventPayload) => {
-      setPairingState((prev) => ({
+      setPairingStates((prev) => ({
         ...prev,
         [pairingTopic]: {
           pairingTopic,
@@ -188,17 +195,20 @@ export function useWalletConnectHook() {
 
   async function pairSession({
     uri,
+    onStart,
     onSuccess,
     onError,
   }: {
     uri: string;
+    onStart?: (pairingTopic: string) => void;
     onSuccess?: (pairingTopic: string) => void;
     onError?: (error: any) => void;
   }) {
     let pairingTopic = "";
     try {
       pairingTopic = uri.split("@")[0].split(":")[1];
-      setPairingState((prev) => ({
+      onStart && onStart(pairingTopic);
+      setPairingStates((prev) => ({
         ...prev,
         [pairingTopic]: {
           pairingTopic,
@@ -208,19 +218,9 @@ export function useWalletConnectHook() {
       }));
 
       await walletConnect.pair(uri);
-      setTimeout(() => {
-        setPairingState((prev) => ({
-          ...prev,
-          [pairingTopic]: {
-            pairingTopic,
-            isLoading: false,
-            error: null,
-          },
-        }));
-      }, 5000);
       onSuccess && onSuccess(pairingTopic);
     } catch (error: any) {
-      setPairingState((prev) => ({
+      setPairingStates((prev) => ({
         ...prev,
         [pairingTopic]: {
           pairingTopic,
@@ -276,7 +276,7 @@ export function useWalletConnectHook() {
     isInitReady,
     initError,
     sessions,
-    pairingState,
+    pairingStates,
     pairSession,
     disconnectSession,
     extendSession,

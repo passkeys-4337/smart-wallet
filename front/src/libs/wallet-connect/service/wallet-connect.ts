@@ -3,7 +3,11 @@ import { EventEmitter } from "events";
 import { Web3Wallet, Web3WalletTypes, IWeb3Wallet } from "@walletconnect/web3wallet";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { SessionTypes } from "@walletconnect/types";
-import { EIP155_CHAINS, EIP155Method } from "@/libs/wallet-connect/config/EIP155";
+import {
+  EIP155_CHAINS,
+  EIP155Method,
+  EthSendTransactionParams,
+} from "@/libs/wallet-connect/config/EIP155";
 import { EthEvent, WCChains } from "@/libs/wallet-connect/config/common";
 import { smartWallet } from "@/libs/smart-wallet/service/smart-wallet";
 
@@ -17,6 +21,8 @@ export enum WCEvent {
   sessionChanged = "session_changed",
   pairingApproved = "pairing_approved",
   pairingRejected = "pairing_rejected",
+  EthSendTransaction = EIP155Method.EthSendTransaction,
+  MethodNotSupported = "method_not_supported",
 }
 
 export interface IPairingApprovedEventPayload {
@@ -167,9 +173,12 @@ class WalletConnect extends EventEmitter {
   }
 
   private async _onSessionRequest(event: Web3WalletTypes.SessionRequest): Promise<void> {
+    console.log("event", event);
     if (!this._web3wallet) return;
     const { topic, params, id } = event;
     const { request } = params;
+
+    console.log("request", request);
     const result = this._jsonRpcEventRouter(request.method, request.params);
 
     // const { request } = params;
@@ -203,22 +212,11 @@ class WalletConnect extends EventEmitter {
 
   private _jsonRpcEventRouter(method: string, params: any) {
     switch (method) {
-      // case EIP155Method.EthSign:
-      // case EIP155Method.PersonalSign:
-      // // smartWallet.getIsValidSignature(params);
-
-      // case EIP155Method.SignTypedData:
-      // case EIP155Method.SignTypedDataV3:
-      // case EIP155Method.SignTypedDataV4:
-      // // do something
-
       case EIP155Method.EthSendTransaction:
-        // case EIP155Method.EthSendRawTransaction:
-        // case EIP155Method.EthSignTransaction:
-        return smartWallet.sendUserOperation(params);
+        this.emit(WCEvent.EthSendTransaction, params[0] as EthSendTransactionParams);
 
       default:
-        // do something
+        this.emit(WCEvent.MethodNotSupported, method);
         return null;
     }
   }

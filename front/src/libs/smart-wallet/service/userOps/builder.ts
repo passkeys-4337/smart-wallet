@@ -54,11 +54,13 @@ export class UserOpBuilder {
     calls,
     maxFeePerGas,
     maxPriorityFeePerGas,
+    callGasLimit,
     keyId,
   }: {
     calls: Call[];
     maxFeePerGas: bigint;
     maxPriorityFeePerGas: bigint;
+    callGasLimit?: bigint;
     keyId: Hex;
   }): Promise<UserOperationAsHex> {
     // calculate smart wallet address via Factory contract
@@ -92,7 +94,7 @@ export class UserOpBuilder {
       callData,
       maxFeePerGas,
       maxPriorityFeePerGas,
-      callGasLimit: BigInt(18286) * BigInt(2),
+      callGasLimit: callGasLimit ?? BigInt(18286) * BigInt(2),
       preVerificationGas: BigInt(57705) * BigInt(10),
       verificationGasLimit:
         BigInt(97655) + BigInt(150_000) + BigInt(initCodeGas) + BigInt(2_000_000),

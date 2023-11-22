@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import Link from "next/link";
-import { Text, Flex, Card, IconButton } from "@radix-ui/themes";
+
+import { Text, Flex, Card, IconButton, Link } from "@radix-ui/themes";
 import { truncate } from "@/utils/truncate";
-import { Url } from "next/dist/shared/lib/router/router";
 import { useWalletConnect, IWCReactSession } from "@/libs/wallet-connect";
 import Spinner from "../Spinner";
 import { LinkBreak2Icon } from "@radix-ui/react-icons";
@@ -46,7 +45,7 @@ export default function SessionCard({ wcReactSession }: IProps) {
           <img src={icons[0]} alt="test" width={50} height={50} />
           <Flex direction={"column"}>
             <Name>{name}</Name>
-            <Link href={url as Url}>{truncate(url?.split("https://")[1] ?? "Unknown", 23)}</Link>
+            <Link href={url}>{truncate(url?.split("https://")[1] ?? "Unknown", 23)}</Link>
           </Flex>
         </Flex>
 
