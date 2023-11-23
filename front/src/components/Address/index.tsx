@@ -25,6 +25,7 @@ export default function Address(props: Props) {
           setTimeout(() => setIsCopied(false), 1000);
         }}
         style={{ ...props.style, display: "flex", alignItems: "center", gap: "6px" }}
+        size={"3"}
       >
         <AvatarIcon fill="red" />
         {me?.account.slice(0, 6)}...{me?.account.slice(-4)}

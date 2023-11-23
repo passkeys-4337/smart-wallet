@@ -5,7 +5,7 @@ import { Flex, Text } from "@radix-ui/themes";
 import { CSSProperties, useEffect } from "react";
 
 const css: CSSProperties = {
-  padding: "2.5rem 0",
+  padding: "4rem 0",
 };
 
 export default function Balance() {
