@@ -66,6 +66,14 @@ export const EIP155_TEST_CHAINS = {
     rpc: "https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
     namespace: "eip155",
   },
+  "eip155:11155111": {
+    chainId: 11155111,
+    name: "Ethereum Sepolia",
+    logo: "/chain-logos/eip155-11155111.png",
+    rgb: "99, 125, 234",
+    rpc: "https://rpc.ankr.com/eth_sepolia",
+    namespace: "eip155",
+  },
   "eip155:43113": {
     chainId: 43113,
     name: "Avalanche Fuji",

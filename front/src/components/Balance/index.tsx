@@ -2,15 +2,15 @@
 
 import { useBalance } from "@/providers/BalanceProvider";
 import { Flex, Text } from "@radix-ui/themes";
-import { CSSProperties, useEffect } from "react";
+import { CSSProperties } from "react";
 
 const css: CSSProperties = {
   padding: "4rem 0",
 };
 
 export default function Balance() {
-  const { balance, refreshBalance } = useBalance();
-  let [intBalance, decimals] = balance.toFixed(2).split(".");
+  const { balance } = useBalance();
+  let [intBalance, decimals] = balance.toString().split(".");
 
   return (
     <Flex style={css} direction="row" justify="center">
@@ -18,7 +18,7 @@ export default function Balance() {
         ${intBalance}
       </Text>
       <Text highContrast={true} weight="bold" size="6" style={{ color: "var(--accent-12)" }}>
-        .{decimals}
+        .{(decimals || "00").slice(0, 2)}
       </Text>
     </Flex>
   );

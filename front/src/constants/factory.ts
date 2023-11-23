@@ -1,5 +1,3 @@
-export const FACTORY_ADDRESS = "0x7236f1BB9BE463437261AA3f74008Bdf76d4ceC1";
-
 export const FACTORY_ABI = [
   {
     inputs: [

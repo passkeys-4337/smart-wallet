@@ -1,5 +1,5 @@
 import { PUBLIC_CLIENT } from "@/constants/client";
-import { FACTORY_ABI, FACTORY_ADDRESS } from "@/constants/factory";
+import { FACTORY_ABI } from "@/constants/factory";
 import { Hex, stringify, toHex } from "viem";
 
 export async function GET(_req: Request, { params }: { params: { id: Hex } }) {
@@ -9,7 +9,7 @@ export async function GET(_req: Request, { params }: { params: { id: Hex } }) {
   }
 
   const user = await PUBLIC_CLIENT.readContract({
-    address: FACTORY_ADDRESS,
+    address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
     abi: FACTORY_ABI,
     functionName: "getUser",
     args: [BigInt(id)],

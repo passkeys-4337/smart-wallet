@@ -58,7 +58,8 @@ export function SendTransaction() {
           {
             dest: address.toLowerCase() as Hex,
             value:
-              (BigInt(usdAmount) * BigInt(1e18)) / (BigInt(price.ethereum.usd * 100) / BigInt(100)), // 100 is the price precision
+              (BigInt(usdAmount) * BigInt(1e18)) /
+              (BigInt(Math.trunc(price.ethereum.usd * 100)) / BigInt(100)), // 100 is the price precision
             data: emptyHex,
           },
         ],
@@ -179,7 +180,7 @@ export function SendTransaction() {
               <>
                 <CheckCircledIcon height="50" width="100%" color="var(--teal-11)" />
                 <Link
-                  href={`https://goerli.basescan.org/tx/${txReceipt.receipt.transactionHash}`}
+                  href={`https://sepolia.etherscan.io/tx/${txReceipt.receipt.transactionHash}`}
                   target="_blank"
                   style={{ textDecoration: "none" }}
                 >
@@ -193,7 +194,7 @@ export function SendTransaction() {
               <>
                 <CrossCircledIcon height="50" width="100%" color="var(--red-9)" />
                 <Link
-                  href={`https://goerli.basescan.org/tx/${txReceipt.receipt.transactionHash}`}
+                  href={`https://sepolia.etherscan.io/tx/${txReceipt.receipt.transactionHash}`}
                   target="_blank"
                   style={{ textDecoration: "none" }}
                 >

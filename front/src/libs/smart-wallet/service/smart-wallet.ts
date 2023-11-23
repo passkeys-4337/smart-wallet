@@ -8,10 +8,10 @@ import {
   PublicClient,
   createPublicClient,
 } from "viem";
-import { baseGoerli } from "viem/chains";
 import { SmartWalletActions, smartWalletActions } from "./decorators";
 import { transport } from "../config";
 import { ERC4337RpcSchema, UserOperationAsHex } from "@/libs/smart-wallet/service/userOps";
+import { CHAIN } from "@/constants";
 
 export type SmartWalletClient<chain extends Chain | undefined = Chain | undefined> = Client<
   Transport,
@@ -38,7 +38,7 @@ class SmartWallet {
 
   constructor() {
     this._client = createSmartWalletClient({
-      chain: baseGoerli,
+      chain: CHAIN,
       transport,
     });
   }

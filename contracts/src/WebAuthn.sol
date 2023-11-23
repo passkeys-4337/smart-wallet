@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.21;
 
+import {P256} from "src/P256.sol";
 import "p256-verifier/utils/Base64URL.sol";
-import "p256-verifier/P256.sol";
+import "forge-std/console2.sol";
 
 /**
  * Helper library for external contracts to verify WebAuthn signatures.

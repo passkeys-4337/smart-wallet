@@ -173,12 +173,10 @@ class WalletConnect extends EventEmitter {
   }
 
   private async _onSessionRequest(event: Web3WalletTypes.SessionRequest): Promise<void> {
-    console.log("event", event);
     if (!this._web3wallet) return;
     const { topic, params, id } = event;
     const { request } = params;
 
-    console.log("request", request);
     const result = this._jsonRpcEventRouter(request.method, request.params);
 
     // const { request } = params;

@@ -19,7 +19,7 @@ import {
 import { UserOperationAsHex, UserOperation, Call } from "@/libs/smart-wallet/service/userOps/types";
 import { DEFAULT_USER_OP } from "@/libs/smart-wallet/service/userOps/constants";
 import { P256Credential, WebAuthn } from "@/libs/web-authn";
-import { ENTRYPOINT_ABI, ENTRYPOINT_ADDRESS, FACTORY_ABI, FACTORY_ADDRESS } from "@/constants";
+import { ENTRYPOINT_ABI, ENTRYPOINT_ADDRESS, FACTORY_ABI } from "@/constants";
 
 export class UserOpBuilder {
   public relayer: Hex = "0x061060a65146b3265C62fC8f3AE977c9B27260fF";
@@ -42,7 +42,7 @@ export class UserOpBuilder {
     });
 
     this.factoryContract = getContract({
-      address: FACTORY_ADDRESS, // only on Base Goerli
+      address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex, // only on Sepolia
       abi: FACTORY_ABI,
       walletClient,
       publicClient: this.publicClient,
