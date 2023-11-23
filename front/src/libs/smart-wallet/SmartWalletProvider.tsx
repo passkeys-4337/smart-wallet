@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { useSmartWalletHook } from "@/libs/smart-wallet/hook/useSmartWalletHook";
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
-import { baseGoerli } from "viem/chains";
+import { CHAIN } from "@/constants";
 
 type UseSmartWallet = ReturnType<typeof useSmartWalletHook>;
 
@@ -20,7 +20,7 @@ export const useWalletConnect = (): UseSmartWallet => {
 export function SmartWalletProvider({ children }: { children: React.ReactNode }) {
   const smartWalletValue = useSmartWalletHook();
 
-  const { publicClient } = configureChains([baseGoerli], [publicProvider()]);
+  const { publicClient } = configureChains([CHAIN], [publicProvider()]);
 
   const wagmiConfig = createConfig({
     autoConnect: true,

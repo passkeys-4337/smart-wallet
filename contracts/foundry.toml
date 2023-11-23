@@ -8,3 +8,4 @@ solc_version = "0.8.21"
 
 [rpc_endpoints]
 base_goerli = "https://goerli.base.org"
+sepolia = "https://rpc.ankr.com/eth_sepolia"

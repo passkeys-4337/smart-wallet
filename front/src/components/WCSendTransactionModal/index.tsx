@@ -95,7 +95,7 @@ export default function WCSendTransactionModal({ params }: Props) {
         gap={"3"}
       >
         <Link
-          href={`https://goerli.basescan.org/tx/${txReceipt?.receipt?.transactionHash}`}
+          href={`https://sepolia.etherscan.io/tx/${txReceipt?.receipt?.transactionHash}`}
           target="_blank"
           style={{ textDecoration: "none" }}
         >
@@ -120,7 +120,7 @@ export default function WCSendTransactionModal({ params }: Props) {
         gap={"3"}
       >
         <Link
-          href={`https://goerli.basescan.org/tx/${txReceipt?.receipt?.transactionHash}`}
+          href={`https://sepolia.etherscan.io/tx/${txReceipt?.receipt?.transactionHash}`}
           target="_blank"
           style={{ textDecoration: "none" }}
         >

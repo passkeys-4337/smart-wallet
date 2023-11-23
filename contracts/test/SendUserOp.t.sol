@@ -18,13 +18,13 @@ contract SendUserOpTest is Test {
 
     function setUp() public {
         // setup fork
-        vm.createSelectFork("base_goerli");
+        vm.createSelectFork("sepolia");
 
         entryPoint = EntryPoint(
             payable(0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789)
         );
         factory = SimpleAccountFactory(
-            0x7236f1BB9BE463437261AA3f74008Bdf76d4ceC1
+            0xDD0f9cB4Cf53d28b976C13e7ee4a169F841924c0
         );
     }
 
@@ -60,7 +60,7 @@ contract SendUserOpTest is Test {
 
         uint8 version = 1;
         uint48 validUntil = 0;
-        bytes32 expectedUserOpHash = hex"72fe91f1b68f75ce391ac973c52d8c525356199dbc5bef6c7bc6f8e2308ead87";
+        bytes32 expectedUserOpHash = hex"e97f70cada097ce881426a3f199e4f95895765659985161e1930def8e1f7b04f";
         bytes memory challengeToSign = abi.encodePacked(
             version,
             validUntil,
@@ -73,8 +73,8 @@ contract SendUserOpTest is Test {
             abi.encode( // signature
                 Utils.rawSignatureToSignature({
                     challenge: challengeToSign,
-                    r: 0x813d6d26f828f855a570eff45308c8bde0d5a417d0f3e07484b0d90efef19382,
-                    s: 0x282e1b0004a893bf6d22fec8cf97190f591ffec78a3b0ab3ea45dfe9fc035d29
+                    r: 0xafb3561771f09d5119b12350f9089874e21a193a37b40c3f872ff4a93730f727,
+                    s: 0x9f2756dc68bd36de31ed67b3f775bf604e86547867796e9679d4b4673aef81e9
                 })
             )
         );
@@ -145,7 +145,7 @@ contract SendUserOpTest is Test {
 
         uint8 version = 1;
         uint48 validUntil = 0;
-        bytes32 expectedUserOpHash = hex"9820526ad734c50227026d253e4aea67076fc60d6a5afcab4d5874e440836350";
+        bytes32 expectedUserOpHash = hex"2215b15dca57f3e9431889b9355a2ad6f0de47ed49e225779f499cd851441528";
         bytes memory challengeToSign = abi.encodePacked(
             version,
             validUntil,
@@ -158,8 +158,8 @@ contract SendUserOpTest is Test {
             abi.encode( // signature
                 Utils.rawSignatureToSignature({
                     challenge: challengeToSign,
-                    r: 0xbd289cd967ea3a3ed4bef628569ba77cda37773f989868e13f011fea25cc0a07,
-                    s: 0x5746f19ae7531346d5099fa2d58c85feb40d80ea46520613c4fccb82a4bc6bdd
+                    r: 0x5bfe729e37e1849b62d5409c600e39c8394df69e86ba55f91de5728431fad828,
+                    s: 0xb0ecaa260794c4993b46216ca08c4432f5c2fe070ea4e7347612c21663eca932
                 })
             )
         );
@@ -167,7 +167,7 @@ contract SendUserOpTest is Test {
         // account not deployed yet
         // we want to test the initCode feature of UserOperation
         SimpleAccount account = SimpleAccount(
-            payable(0x31A5Ae294082B7E0A243d64B98DFc290Ae519EDB)
+            payable(0xa3ec6EEeDb3bBcAA232e5a8836A5745455098327)
         );
         vm.deal(address(account), 1 ether);
 

@@ -1,8 +1,18 @@
 import { createPublicClient, http } from "viem";
-import { baseGoerli, sepolia, mainnet } from "viem/chains";
+import { sepolia, mainnet } from "viem/chains";
+
+
+export const CHAIN = {
+  ...sepolia,
+  rpcUrls: {
+    ...sepolia.rpcUrls,
+    default: { http: ["https://rpc.ankr.com/eth_sepolia"] },
+    public: { http: ["https://rpc.ankr.com/eth_sepolia"] },
+  },
+};
 
 export const PUBLIC_CLIENT = createPublicClient({
-  chain: baseGoerli,
+  chain: CHAIN,
   transport: http(),
 });
 
