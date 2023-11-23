@@ -1,14 +1,18 @@
 "use client";
 
-import { Chain, Hash } from "viem";
+import { Chain, EstimateFeesPerGasReturnType, Hash, Hex } from "viem";
 import { smartWallet } from "@/libs/smart-wallet";
 import { useEffect, useRef, useState } from "react";
-import { Flex, Link, Button, Heading, Text, TextField } from "@radix-ui/themes";
-import { UserOpBuilder } from "@/libs/smart-wallet/service/userOps";
+import { Flex, Link, Button, Heading, Text, TextField, Callout } from "@radix-ui/themes";
+import { UserOpBuilder, emptyHex } from "@/libs/smart-wallet/service/userOps";
 import { useBalance } from "@/providers/BalanceProvider";
-import { CheckCircledIcon, CrossCircledIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
+import {
+  CheckCircledIcon,
+  CrossCircledIcon,
+  ExternalLinkIcon,
+  InfoCircledIcon,
+} from "@radix-ui/react-icons";
 import { useMe } from "@/providers/MeProvider";
-import * as Form from "@radix-ui/react-form";
 import Spinner from "../Spinner";
 import { MAINNET_PUBLIC_CLIENT } from "@/constants";
 import { normalize } from "viem/ens";
@@ -103,38 +107,83 @@ export default function SendTxModal() {
     e.preventDefault();
 
     try {
-      // const formData = new FormData(e.target as HTMLFormElement);
-      // const address = formData?.get("address") as Hex;
-      // const usdAmount = formData?.get("amount") as `${number}`;
-      // const price: { ethereum: { usd: number } } = await (
-      //   await fetch("/api/price?ids=ethereum&currencies=usd")
-      // ).json();
-      // const { maxFeePerGas, maxPriorityFeePerGas }: EstimateFeesPerGasReturnType =
-      //   await smartWallet.client.estimateFeesPerGas();
-      // const userOp = await builder.buildUserOp({
-      //   calls: [
-      //     {
-      //       dest: address.toLowerCase() as Hex,
-      //       value:
-      //         (BigInt(usdAmount) * BigInt(1e18)) / (BigInt(price.ethereum.usd * 100) / BigInt(100)), // 100 is the price precision
-      //       data: emptyHex,
-      //     },
-      //   ],
-      //   maxFeePerGas: maxFeePerGas as bigint,
-      //   maxPriorityFeePerGas: maxPriorityFeePerGas as bigint,
-      //   keyId: me?.keyId as Hex,
-      // });
-      // const hash = await smartWallet.sendUserOperation({ userOp });
-      // const receipt = await smartWallet.waitForUserOperationReceipt({ hash });
-      // setTxReceipt(receipt);
-    } catch (e) {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const address = formData?.get("address") as Hex;
+      const usdAmount = formData?.get("amount") as `${number}`;
+      const price: { ethereum: { usd: number } } = await (
+        await fetch("/api/price?ids=ethereum&currencies=usd")
+      ).json();
+      const { maxFeePerGas, maxPriorityFeePerGas }: EstimateFeesPerGasReturnType =
+        await smartWallet.client.estimateFeesPerGas();
+      const userOp = await builder.buildUserOp({
+        calls: [
+          {
+            dest: address.toLowerCase() as Hex,
+            value:
+              (BigInt(usdAmount) * BigInt(1e18)) / (BigInt(price.ethereum.usd * 100) / BigInt(100)), // 100 is the price precision
+            data: emptyHex,
+          },
+        ],
+        maxFeePerGas: maxFeePerGas as bigint,
+        maxPriorityFeePerGas: maxPriorityFeePerGas as bigint,
+        keyId: me?.keyId as Hex,
+      });
+      const hash = await smartWallet.sendUserOperation({ userOp });
+      const receipt = await smartWallet.waitForUserOperationReceipt({ hash });
+      setTxReceipt(receipt);
+    } catch (e: any) {
       console.error(e);
-      setError("Something went wrong!");
+      setError(e.message);
     } finally {
       setIsLoading(false);
       refreshBalance();
     }
   };
+
+  if (isLoading)
+    return (
+      <Flex direction="column" justify="center" align="center" grow="1" gap="5">
+        <Spinner style={{ margin: 0 }} />
+        <Text size="2">Sending transaction...</Text>
+      </Flex>
+    );
+
+  if (txReceipt && !isLoading)
+    return (
+      <>
+        <Flex direction="column" justify="center" align="center" grow="1" gap="5">
+          {true ? (
+            <>
+              <CheckCircledIcon height="32" width="100%" color="var(--teal-11)" />
+              <Link
+                href={`https://sepolia.etherscan.org/tx/${txReceipt?.receipt?.transactionHash}`}
+                target="_blank"
+                style={{ textDecoration: "none" }}
+              >
+                <Flex direction="row" gap="2">
+                  <Text size="2">See transaction</Text>
+                  <ExternalLinkIcon style={{ alignSelf: "center", color: "var(--teal-11)" }} />
+                </Flex>
+              </Link>
+            </>
+          ) : (
+            <>
+              <CrossCircledIcon height="32" width="100%" />
+              <Link
+                href={`https://sepolia.etherscan.org/tx/${txReceipt?.receipt?.transactionHash}`}
+                target="_blank"
+                style={{ textDecoration: "none" }}
+              >
+                <Flex direction="row" gap="2" style={{ color: "var(--gray-12)" }}>
+                  <Text size="2">Transaction reverted</Text>
+                  <ExternalLinkIcon style={{ alignSelf: "center" }} />
+                </Flex>
+              </Link>
+            </>
+          )}
+        </Flex>
+      </>
+    );
 
   return (
     <Flex direction="column" style={{ flexGrow: 1, width: "100%" }} gap="5">
@@ -231,69 +280,35 @@ export default function SendTxModal() {
                       </TextField.Slot>
                     </TextField.Root>
 
-                    <Text size="3" style={{ paddingInline: "0.5rem", alignSelf: "flex-end" }}>
+                    <Text
+                      size="2"
+                      style={{ paddingInline: "0.5rem", alignSelf: "flex-end" }}
+                      color="gray"
+                    >
                       ${balance.toString().slice(0, 4)} available
                     </Text>
                   </Flex>
                 </Flex>
               </div>
             </Flex>
+          </Flex>
+
+          <Flex direction={"column"} gap="3">
             {error && (
-              <Text size="2" weight="bold" style={{ color: "var(--accent-9)" }}>
-                {error}
-              </Text>
+              <Callout.Root
+                style={{ maxHeight: "150px", overflowY: "scroll", wordBreak: "break-word" }}
+              >
+                <Callout.Icon>
+                  <InfoCircledIcon />
+                </Callout.Icon>
+                <Callout.Text>{error}</Callout.Text>
+              </Callout.Root>
             )}
+            <Button variant="outline" size="3" type="submit">
+              SEND
+            </Button>
           </Flex>
-
-          <Button variant="outline" size="3" type="submit">
-            SEND
-          </Button>
         </form>
-      )}
-
-      {isLoading && (
-        <Flex direction="column" justify="center" align="center" grow="1" gap="5">
-          <Spinner />
-          <Text size="2" weight="bold">
-            Sending transaction...
-          </Text>
-        </Flex>
-      )}
-
-      {txReceipt && !isLoading && (
-        <>
-          <Flex direction="column" justify="center" align="center" grow="1" gap="5">
-            {txReceipt.success ? (
-              <>
-                <CheckCircledIcon height="50" width="100%" color="var(--teal-11)" />
-                <Link
-                  href={`https://goerli.basescan.org/tx/${txReceipt.receipt.transactionHash}`}
-                  target="_blank"
-                  style={{ textDecoration: "none" }}
-                >
-                  <Flex direction="row" gap="2" style={{ color: "var(--teal-11)" }}>
-                    See transaction
-                    <ExternalLinkIcon style={{ alignSelf: "center", color: "var(--teal-11)" }} />
-                  </Flex>
-                </Link>
-              </>
-            ) : (
-              <>
-                <CrossCircledIcon height="50" width="100%" color="var(--red-9)" />
-                <Link
-                  href={`https://goerli.basescan.org/tx/${txReceipt.receipt.transactionHash}`}
-                  target="_blank"
-                  style={{ textDecoration: "none" }}
-                >
-                  <Flex direction="row" gap="2" style={{ color: "var(--red-9)" }}>
-                    Transaction failed!
-                    <ExternalLinkIcon style={{ alignSelf: "center", color: "var(--red-9)" }} />
-                  </Flex>
-                </Link>
-              </>
-            )}
-          </Flex>
-        </>
       )}
     </Flex>
   );
