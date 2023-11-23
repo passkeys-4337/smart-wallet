@@ -107,9 +107,6 @@ export default function SendTxModal() {
     e.preventDefault();
 
     try {
-      const formData = new FormData(e.target as HTMLFormElement);
-      const address = formData?.get("address") as Hex;
-      const usdAmount = formData?.get("amount") as `${number}`;
       const price: { ethereum: { usd: number } } = await (
         await fetch("/api/price?ids=ethereum&currencies=usd")
       ).json();
@@ -118,9 +115,10 @@ export default function SendTxModal() {
       const userOp = await builder.buildUserOp({
         calls: [
           {
-            dest: address.toLowerCase() as Hex,
+            dest: destination.toLowerCase() as Hex,
             value:
-              (BigInt(usdAmount) * BigInt(1e18)) / (BigInt(price.ethereum.usd * 100) / BigInt(100)), // 100 is the price precision
+              (BigInt(userInputAmount) * BigInt(1e18)) /
+              (BigInt(price.ethereum.usd * 100) / BigInt(100)), // 100 is the price precision
             data: emptyHex,
           },
         ],
@@ -156,7 +154,7 @@ export default function SendTxModal() {
             <>
               <CheckCircledIcon height="32" width="100%" color="var(--teal-11)" />
               <Link
-                href={`https://sepolia.etherscan.org/tx/${txReceipt?.receipt?.transactionHash}`}
+                href={`https://sepolia.etherscan.io/tx/${txReceipt?.receipt?.transactionHash}`}
                 target="_blank"
                 style={{ textDecoration: "none" }}
               >
@@ -170,7 +168,7 @@ export default function SendTxModal() {
             <>
               <CrossCircledIcon height="32" width="100%" />
               <Link
-                href={`https://sepolia.etherscan.org/tx/${txReceipt?.receipt?.transactionHash}`}
+                href={`https://sepolia.etherscan.io/tx/${txReceipt?.receipt?.transactionHash}`}
                 target="_blank"
                 style={{ textDecoration: "none" }}
               >
