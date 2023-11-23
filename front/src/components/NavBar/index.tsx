@@ -6,6 +6,7 @@ import { PaperPlaneIcon, CornersIcon } from "@radix-ui/react-icons";
 import { SendTransaction } from "@/components/SendTransaction";
 import { useEffect } from "react";
 import QrReaderModal from "../QrReaderModal";
+import SendTxModal from "../SendTxModal";
 
 export default function NavBar() {
   const { open } = useModal();
@@ -20,7 +21,7 @@ export default function NavBar() {
           display: "flex",
           alignItems: "center",
         }}
-        onClick={() => open(<SendTransaction />)}
+        onClick={() => open(<SendTxModal />)}
       >
         {" "}
         Send a transaction
