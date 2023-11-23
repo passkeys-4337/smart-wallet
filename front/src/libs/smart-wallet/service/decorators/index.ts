@@ -15,7 +15,9 @@ import { UserOperationAsHex } from "@/libs/smart-wallet/service/userOps";
 
 export type SmartWalletActions = {
   sendUserOperation: (args: { userOp: UserOperationAsHex }) => Promise<SendUserOperationReturnType>;
-  estimateUserOperationGas: (args: any) => Promise<EstimateUserOperationGasReturnType>;
+  estimateUserOperationGas: (args: {
+    userOp: UserOperationAsHex;
+  }) => Promise<EstimateUserOperationGasReturnType>;
   getUserOperationReceipt: (args: any) => Promise<GetUserOperationReceiptReturnType>;
   getIsValidSignature: (args: any) => Promise<GetIsValidSignatureReturnType>;
   waitForUserOperationReceipt: (args: any) => Promise<GetUserOperationReceiptReturnType>;

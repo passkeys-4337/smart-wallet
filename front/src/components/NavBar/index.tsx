@@ -3,8 +3,6 @@
 import { Button, Flex } from "@radix-ui/themes";
 import { useModal } from "@/providers/ModalProvider";
 import { PaperPlaneIcon, CornersIcon } from "@radix-ui/react-icons";
-import { SendTransaction } from "@/components/SendTransaction";
-import { useEffect } from "react";
 import QrReaderModal from "../QrReaderModal";
 import SendTxModal from "../SendTxModal";
 

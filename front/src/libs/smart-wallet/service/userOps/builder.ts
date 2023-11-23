@@ -20,6 +20,7 @@ import { UserOperationAsHex, UserOperation, Call } from "@/libs/smart-wallet/ser
 import { DEFAULT_USER_OP } from "@/libs/smart-wallet/service/userOps/constants";
 import { P256Credential, WebAuthn } from "@/libs/web-authn";
 import { ENTRYPOINT_ABI, ENTRYPOINT_ADDRESS, FACTORY_ABI } from "@/constants";
+import { smartWallet } from "@/libs/smart-wallet";
 
 export class UserOpBuilder {
   public relayer: Hex = "0x061060a65146b3265C62fC8f3AE977c9B27260fF";
@@ -54,16 +55,14 @@ export class UserOpBuilder {
     calls,
     maxFeePerGas,
     maxPriorityFeePerGas,
-    callGasLimit,
     keyId,
   }: {
     calls: Call[];
     maxFeePerGas: bigint;
     maxPriorityFeePerGas: bigint;
-    callGasLimit?: bigint;
     keyId: Hex;
   }): Promise<UserOperationAsHex> {
-    // calculate smart wallet address via Factory contract
+    // calculate smart wallet address via Factory contract to know the sender
     const { account, publicKey } = await this._calculateSmartWalletAddress(keyId); // the keyId is the id tied to the user's public key
 
     // get bytecode
@@ -94,11 +93,21 @@ export class UserOpBuilder {
       callData,
       maxFeePerGas,
       maxPriorityFeePerGas,
-      callGasLimit: callGasLimit ?? BigInt(18286) * BigInt(2),
-      preVerificationGas: BigInt(57705) * BigInt(10),
-      verificationGasLimit:
-        BigInt(97655) + BigInt(150_000) + BigInt(initCodeGas) + BigInt(2_000_000),
     };
+
+    // estimate gas for this partial user operation
+    // real good article about the subject can be found here:
+    // https://www.alchemy.com/blog/erc-4337-gas-estimation
+    const { callGasLimit, verificationGasLimit, preVerificationGas } =
+      await smartWallet.estimateUserOperationGas({
+        userOp: this.toParams(userOp),
+      });
+
+    // set gas limits with the estimated values + some extra gas for safety
+    userOp.callGasLimit = callGasLimit;
+    userOp.preVerificationGas = BigInt(preVerificationGas) * BigInt(10);
+    userOp.verificationGasLimit =
+      BigInt(verificationGasLimit) + BigInt(150_000) + BigInt(initCodeGas) + BigInt(1_000_000);
 
     // get userOp hash (with signature == 0x) by calling the entry point contract
     const userOpHash = await this._getUserOpHash(userOp);
