@@ -56,7 +56,6 @@ export default function WCSendTransactionModal({ params }: Props) {
             data: params.data,
           },
         ],
-        callGasLimit,
         maxFeePerGas: maxFeePerGas as bigint,
         maxPriorityFeePerGas: maxPriorityFeePerGas as bigint,
         keyId: me.keyId,

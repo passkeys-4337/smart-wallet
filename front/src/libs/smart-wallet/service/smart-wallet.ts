@@ -12,6 +12,7 @@ import { SmartWalletActions, smartWalletActions } from "./decorators";
 import { transport } from "../config";
 import { ERC4337RpcSchema, UserOperationAsHex } from "@/libs/smart-wallet/service/userOps";
 import { CHAIN } from "@/constants";
+import { EstimateUserOperationGasReturnType } from "@/libs/smart-wallet/service/actions";
 
 export type SmartWalletClient<chain extends Chain | undefined = Chain | undefined> = Client<
   Transport,
@@ -61,7 +62,9 @@ class SmartWallet {
     });
   }
 
-  public async estimateUserOperationGas(args: any): Promise<bigint> {
+  public async estimateUserOperationGas(args: {
+    userOp: UserOperationAsHex;
+  }): Promise<EstimateUserOperationGasReturnType> {
     this._isInit();
     return await this._client.estimateUserOperationGas({
       ...args,

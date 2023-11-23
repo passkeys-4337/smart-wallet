@@ -118,7 +118,7 @@ export default function SendTxModal() {
             dest: destination.toLowerCase() as Hex,
             value:
               (BigInt(userInputAmount) * BigInt(1e18)) /
-              (BigInt(price.ethereum.usd * 100) / BigInt(100)), // 100 is the price precision
+              (BigInt(Math.trunc(price.ethereum.usd * 100)) / BigInt(100)), // 100 is the price precision
             data: emptyHex,
           },
         ],
