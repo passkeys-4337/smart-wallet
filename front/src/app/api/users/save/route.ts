@@ -1,4 +1,4 @@
-import { FACTORY_ABI, FACTORY_ADDRESS } from "@/constants/factory";
+import { FACTORY_ABI } from "@/constants/factory";
 import { Hex, createPublicClient, createWalletClient, http, toHex, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseGoerli } from "viem/chains";
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   });
 
   const user = await publicClient.readContract({
-    address: FACTORY_ADDRESS,
+    address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
     abi: FACTORY_ABI,
     functionName: "getUser",
     args: [BigInt(id)],
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   }
 
   const hash = await walletClient.writeContract({
-    address: FACTORY_ADDRESS,
+    address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
     abi: FACTORY_ABI,
     functionName: "saveUser",
     args: [BigInt(id), pubKey],
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   await publicClient.waitForTransactionReceipt({ hash });
 
   const createdUser = await publicClient.readContract({
-    address: FACTORY_ADDRESS,
+    address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
     abi: FACTORY_ABI,
     functionName: "getUser",
     args: [BigInt(id)],

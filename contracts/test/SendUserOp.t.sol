@@ -110,7 +110,6 @@ contract SendUserOpTest is Test {
         // add signature to op after calculating hash
         op.signature = ownerSig;
 
-        // expect a valid but reverting op
         UserOperation[] memory ops = new UserOperation[](1);
         ops[0] = op;
         vm.expectEmit(true, true, true, false);
@@ -125,7 +124,6 @@ contract SendUserOpTest is Test {
         );
         entryPoint.handleOps(ops, payable(address(account)));
 
-        // code coverage can't handle indirect calls
         // call validateUserOp directly
         SimpleAccount account2 = new SimpleAccount(account.entryPoint());
         vm.store(address(account2), 0, 0); // set _initialized = 0
@@ -147,7 +145,7 @@ contract SendUserOpTest is Test {
 
         uint8 version = 1;
         uint48 validUntil = 0;
-        bytes32 expectedUserOpHash = hex"ed8c67fc3b6e6eb7b867c90201f13fa61a45f8eeaea636057443e64f56013f31";
+        bytes32 expectedUserOpHash = hex"9820526ad734c50227026d253e4aea67076fc60d6a5afcab4d5874e440836350";
         bytes memory challengeToSign = abi.encodePacked(
             version,
             validUntil,
@@ -160,8 +158,8 @@ contract SendUserOpTest is Test {
             abi.encode( // signature
                 Utils.rawSignatureToSignature({
                     challenge: challengeToSign,
-                    r: 0xbced80a2f0cc4f977e145107744da4475b7f127e9d0ec73c77785279874ca8dc,
-                    s: 0x68597940751e2f8cfd60433a9a22fdb4fe704a3148e47ee69b7a5909ab4b3948
+                    r: 0xbd289cd967ea3a3ed4bef628569ba77cda37773f989868e13f011fea25cc0a07,
+                    s: 0x5746f19ae7531346d5099fa2d58c85feb40d80ea46520613c4fccb82a4bc6bdd
                 })
             )
         );
@@ -179,9 +177,12 @@ contract SendUserOpTest is Test {
             abi.encodeCall(factory.createAccount, (publicKey))
         );
 
-        // send 42 wei to bigq dev
+        // send 42 wei to another smart wallet
+        SimpleAccount otherAccount = factory.createAccount(
+            [bytes32(uint256(0x1)), bytes32(uint256(0x2))]
+        );
         Call[] memory calls = new Call[](1);
-        calls[0] = Call({dest: bigqDevAddress, value: 42, data: hex""});
+        calls[0] = Call({dest: address(otherAccount), value: 42, data: hex""});
 
         bytes memory callData = abi.encodeCall(
             SimpleAccount.executeBatch,
@@ -215,7 +216,7 @@ contract SendUserOpTest is Test {
         op.signature = ownerSig;
 
         // compute balance before userOp validation and execution
-        uint256 balanceBefore = bigqDevAddress.balance;
+        uint256 balanceBefore = address(otherAccount).balance;
 
         UserOperation[] memory ops = new UserOperation[](1);
         ops[0] = op;
@@ -233,7 +234,7 @@ contract SendUserOpTest is Test {
         entryPoint.handleOps(ops, payable(address(account)));
 
         // compute balance after userOp validation and execution
-        uint256 balanceAfter = bigqDevAddress.balance;
+        uint256 balanceAfter = address(otherAccount).balance;
         assertEq(balanceAfter - balanceBefore, 42);
     }
 }

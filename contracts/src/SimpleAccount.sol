@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.13;
 
 import "forge-std/console2.sol";
@@ -66,6 +67,9 @@ contract SimpleAccount is IAccount, UUPSUpgradeable, Initializable, IERC1271 {
 
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
+
+    // solhint-disable-next-line no-empty-blocks
+    fallback() external payable {}
 
     function _onlyOwner() internal view {
         //directly through the account itself (which gets redirected through execute())
