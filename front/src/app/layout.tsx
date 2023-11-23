@@ -7,7 +7,6 @@ import { SmartWalletProvider } from "@/libs/smart-wallet/SmartWalletProvider";
 import { ModalProvider } from "@/providers/ModalProvider";
 import { BalanceProvider } from "@/providers/BalanceProvider";
 import { MeProvider } from "@/providers/MeProvider";
-import { TransactionProvider } from "@/providers/TransactionProvider";
 import { Metadata } from "next";
 import { ModalOnWCEvent } from "@/libs/wallet-connect/ModalOnWCEvent";
 
@@ -36,21 +35,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body>
         <MeProvider>
-          <TransactionProvider>
-            <BalanceProvider>
-              <SmartWalletProvider>
-                <WalletConnectProvider>
-                  <ThemeProvider attribute="class">
-                    <Theme style={css} radius={"full"} accentColor={"red"}>
-                      <ModalProvider>
-                        <ModalOnWCEvent>{children}</ModalOnWCEvent>
-                      </ModalProvider>
-                    </Theme>
-                  </ThemeProvider>
-                </WalletConnectProvider>
-              </SmartWalletProvider>
-            </BalanceProvider>
-          </TransactionProvider>
+          <BalanceProvider>
+            <SmartWalletProvider>
+              <WalletConnectProvider>
+                <ThemeProvider attribute="class">
+                  <Theme style={css} radius={"full"} accentColor={"teal"}>
+                    <ModalProvider>
+                      <ModalOnWCEvent>{children}</ModalOnWCEvent>
+                    </ModalProvider>
+                  </Theme>
+                </ThemeProvider>
+              </WalletConnectProvider>
+            </SmartWalletProvider>
+          </BalanceProvider>
         </MeProvider>
       </body>
     </html>

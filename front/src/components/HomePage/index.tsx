@@ -7,6 +7,7 @@ import Balance from "../Balance";
 import NavBar from "../NavBar";
 import History from "../History";
 import TopBar from "../TopBar";
+import LogoAnimated from "../LogoAnimated";
 
 export default function Home() {
   const { me, isMounted } = useMe();
@@ -15,10 +16,12 @@ export default function Home() {
 
   if (me) {
     return (
-      <Flex direction="column" width="100%">
-        <TopBar />
-        <Balance />
-        <NavBar />
+      <Flex direction="column" width="100%" justify={"between"}>
+        <Flex direction="column" width="100%">
+          <TopBar />
+          <Balance />
+          <NavBar />
+        </Flex>
         <History />
       </Flex>
     );

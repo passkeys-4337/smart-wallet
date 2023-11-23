@@ -11,21 +11,32 @@ export default function NavBar() {
   const { open } = useModal();
 
   return (
-    <Flex justify="center" direction="row" gap="5" style={{ marginInline: "2 rem" }}>
+    <Flex justify="center" direction="column" gap="4" style={{ marginInline: "2 rem" }}>
       <Button
-        size="4"
+        size="3"
         variant="outline"
-        style={{ flexGrow: 1 }}
+        style={{
+          flexGrow: 1,
+          display: "flex",
+          alignItems: "center",
+        }}
         onClick={() => open(<SendTransaction />)}
       >
+        {" "}
+        Send a transaction
         <PaperPlaneIcon />
       </Button>
       <Button
-        size="4"
+        size="3"
         variant="outline"
-        style={{ flexGrow: 1 }}
+        style={{
+          flexGrow: 1,
+          display: "flex",
+          alignItems: "center",
+        }}
         onClick={() => open(<QrReaderModal />)}
       >
+        Connect a dApp
         <CornersIcon style={{ width: 20, height: 20 }} />
       </Button>
     </Flex>

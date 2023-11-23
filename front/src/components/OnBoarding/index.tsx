@@ -23,18 +23,11 @@ export default function OnBoarding() {
         <IconButton
           onClick={() => window.open("https://github.com/passkeys-4337/smart-wallet", "_blank")}
           variant="soft"
+          size={"3"}
         >
           <GitHubLogoIcon />
         </IconButton>
-        <Flex
-          gap={"1"}
-          style={{ width: "100%", color: "var(--gray-8)" }}
-          align={"center"}
-          justify={"center"}
-        >
-          <Text size={"2"}>Build for</Text>
-          <BaseLogo style={{ fill: "var(--gray-8)", width: "60px" }} />
-        </Flex>
+
         <ThemeButton />
       </Flex>
 

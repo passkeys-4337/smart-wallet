@@ -22,6 +22,7 @@ export default function ThemeButton({ style }: Props) {
     <IconButton
       style={style}
       variant={"soft"}
+      size={"3"}
       onClick={() => {
         if (theme === "system") {
           setTheme(systemTheme === "dark" ? "light" : "dark");

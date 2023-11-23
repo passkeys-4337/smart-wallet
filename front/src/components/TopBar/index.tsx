@@ -8,7 +8,7 @@ export default function TopBar() {
     <Flex width="100%" justify="between" align="center">
       <Address style={{ alignSelf: "center" }} />
       <Link href={"/settings"}>
-        <IconButton variant="soft" size={"2"}>
+        <IconButton variant="soft" size={"3"}>
           <GearIcon />
         </IconButton>
       </Link>

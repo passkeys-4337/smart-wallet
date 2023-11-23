@@ -27,7 +27,7 @@ export default function SettingsPage() {
           <ThemeButton />
 
           <Link href={"/"}>
-            <IconButton variant="soft">
+            <IconButton variant="soft" size={"3"}>
               <ArrowLeftIcon />
             </IconButton>
           </Link>
