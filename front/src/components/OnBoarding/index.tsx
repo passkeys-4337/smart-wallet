@@ -92,7 +92,7 @@ export default function OnBoarding() {
       )}
 
       <Flex style={{ width: "100%", whiteSpace: "nowrap" }} justify={"end"}>
-        {!createForm && (
+        {!createForm && !isLoading && (
           <Link
             onClick={() => {
               !isLoading && setCreateForm(true);
@@ -103,7 +103,7 @@ export default function OnBoarding() {
           </Link>
         )}
 
-        {createForm && (
+        {createForm && !isLoading && (
           <Link onClick={() => !isLoading && setCreateForm(false)} size={"2"}>
             or log in with an existing passkey
           </Link>
