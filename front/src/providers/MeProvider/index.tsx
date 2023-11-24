@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { Address, Hex } from "viem";
+import { Address, Hex, zeroAddress } from "viem";
 import { WebAuthn } from "@/libs/web-authn/service/web-authn";
 import { saveUser } from "@/libs/factory";
 import { getUser } from "@/libs/factory/getUser";
@@ -23,7 +23,7 @@ function useMeHook() {
   const [isMounted, setIsMounted] = useState(false);
 
   function disconnect() {
-    localStorage.removeItem("hocuspocus.me");
+    localStorage.removeItem("passkeys4337.me");
     setMe(null);
   }
 
@@ -50,8 +50,8 @@ function useMeHook() {
         console.log("error while saving user");
         return;
       }
-      localStorage.setItem("hocuspocus.me", JSON.stringify(me));
-      localStorage.setItem("hocuspocus.returning", "true");
+      localStorage.setItem("passkeys4337.me", JSON.stringify(me));
+      localStorage.setItem("passkeys4337.returning", "true");
       walletConnect.smartWalletAddress = me.account;
       setIsReturning(true);
       setMe(me);
@@ -70,18 +70,25 @@ function useMeHook() {
         return;
       }
       const user = await getUser(credential.rawId);
+
+      if (user?.account === undefined || user?.account === zeroAddress) {
+        throw new Error("user not found");
+      }
+
       const me = {
         keyId: user.id as Hex,
         pubKey: user.pubKey,
         account: user.account,
       };
 
-      localStorage.setItem("hocuspocus.me", JSON.stringify(me));
-      localStorage.setItem("hocuspocus.returning", "true");
+      localStorage.setItem("passkeys4337.me", JSON.stringify(me));
+      localStorage.setItem("passkeys4337.returning", "true");
       walletConnect.smartWalletAddress = me.account;
       setIsReturning(true);
       setMe(me);
     } catch (e) {
+      localStorage.removeItem("passkeys4337.returning");
+      disconnect();
       console.error(e);
     } finally {
       setIsLoading(false);
@@ -89,8 +96,8 @@ function useMeHook() {
   }
 
   useEffect(() => {
-    const me = localStorage.getItem("hocuspocus.me");
-    const returning = localStorage.getItem("hocuspocus.returning");
+    const me = localStorage.getItem("passkeys4337.me");
+    const returning = localStorage.getItem("passkeys4337.returning");
     if (me) {
       try {
         setMe(JSON.parse(me));
