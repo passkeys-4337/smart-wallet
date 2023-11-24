@@ -2,30 +2,42 @@
 
 import { getUser } from "@/libs/factory/getUser";
 import { useMe } from "@/providers/MeProvider";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { Hex } from "viem";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { Hex, formatEther } from "viem";
 
 function useBalanceHook() {
   // balance in usd
-  const [balance, setBalance] = useState<number>(0);
+  const [balance, setBalance] = useState<string>("0.00");
   const [increment, setIncrement] = useState<number>(0);
+
   const { me } = useMe();
 
   const getBalance = useCallback(async (keyId: Hex) => {
     const user = await getUser(keyId);
-    const ethBalance = Number(user.balance) / 1e18;
+    console.log(user.balance);
     const priceData = await fetch("/api/price?ids=ethereum&currencies=usd");
-    const price: number = (await priceData.json()).ethereum.usd;
-    setBalance(ethBalance * price);
+    const price: number = Math.trunc((await priceData.json()).ethereum.usd * 100);
+    const balance = formatEther((BigInt(user.balance) * BigInt(price)) / BigInt(100));
+    setBalance(balance);
   }, []);
 
   const refreshBalance = useCallback(() => {
     setIncrement((prev) => prev + 1);
   }, []);
 
+  let interval = useRef<any>(null);
+
   useEffect(() => {
     if (!me?.keyId) return;
     getBalance(me?.keyId);
+    interval.current && clearInterval(interval.current);
+    interval.current = setInterval(() => {
+      getBalance(me?.keyId);
+    }, 3000);
+
+    return () => {
+      clearInterval(interval.current);
+    };
   }, [me, getBalance, increment]);
 
   return {

@@ -104,7 +104,7 @@ export class UserOpBuilder {
       });
 
     // set gas limits with the estimated values + some extra gas for safety
-    userOp.callGasLimit = callGasLimit;
+    userOp.callGasLimit = BigInt(callGasLimit);
     userOp.preVerificationGas = BigInt(preVerificationGas) * BigInt(10);
     userOp.verificationGasLimit =
       BigInt(verificationGasLimit) + BigInt(150_000) + BigInt(initCodeGas) + BigInt(1_000_000);
@@ -116,7 +116,7 @@ export class UserOpBuilder {
     const msgToSign = encodePacked(["uint8", "uint48", "bytes32"], [1, 0, userOpHash]);
 
     // get signature from webauthn
-    const signature = await this.getSignature(msgToSign);
+    const signature = await this.getSignature(msgToSign, keyId);
 
     return this.toParams({ ...userOp, signature });
   }
@@ -137,8 +137,14 @@ export class UserOpBuilder {
     };
   }
 
-  public async getSignature(msgToSign: Hex): Promise<Hex> {
+  public async getSignature(msgToSign: Hex, keyId: Hex): Promise<Hex> {
     const credentials: P256Credential = (await WebAuthn.get(msgToSign)) as P256Credential;
+
+    if (credentials.rawId !== keyId) {
+      throw new Error(
+        "Incorrect passkeys used for tx signing. Please sign the transaction with the correct logged-in account",
+      );
+    }
 
     const signature = encodePacked(
       ["uint8", "uint48", "bytes"],

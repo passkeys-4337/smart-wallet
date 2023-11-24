@@ -2,8 +2,8 @@ import { UserOperation } from "@/libs/smart-wallet/service/userOps/types";
 import { toHex, zeroAddress } from "viem";
 
 export const DEFAULT_CALL_GAS_LIMIT = BigInt(200_000);
-export const DEFAULT_VERIFICATION_GAS_LIMIT = BigInt(2_000_000);
-export const DEFAULT_PRE_VERIFICATION_GAS = BigInt(65_000);
+export const DEFAULT_VERIFICATION_GAS_LIMIT = BigInt(2_000_000); // 2M
+export const DEFAULT_PRE_VERIFICATION_GAS = BigInt(80_000); //65000
 
 export const DEFAULT_USER_OP: UserOperation = {
   sender: zeroAddress,

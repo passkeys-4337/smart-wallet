@@ -9,9 +9,6 @@ import { SessionTypes } from "@walletconnect/types";
 import { WC_CONFIG } from "../config";
 import { on } from "events";
 import { useMe } from "@/providers/MeProvider";
-import { EthSendTransactionParams } from "../config/EIP155";
-import { useModal } from "@/providers/ModalProvider";
-import WCSendTransactionModal from "@/components/WCSendTransactionModal";
 
 interface ISessions {
   [topic: string]: SessionTypes.Struct;

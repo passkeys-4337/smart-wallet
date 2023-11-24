@@ -46,16 +46,18 @@ export const waitForUserOperationReceipt = <TChain extends Chain | undefined>(
           _unobserve();
         };
 
-        const _userOperationReceipt = await getUserOperationReceipt(client, { hash });
+        try {
+          const _userOperationReceipt = await getUserOperationReceipt(client, { hash });
 
-        if (_userOperationReceipt !== null) {
-          userOperationReceipt = _userOperationReceipt;
-        }
+          if (_userOperationReceipt !== null) {
+            userOperationReceipt = _userOperationReceipt;
+          }
 
-        if (userOperationReceipt) {
-          done(() => emit.resolve(userOperationReceipt));
-          return;
-        }
+          if (userOperationReceipt) {
+            done(() => emit.resolve(userOperationReceipt));
+            return;
+          }
+        } catch (error) {}
       }, pollingInterval);
     });
   });

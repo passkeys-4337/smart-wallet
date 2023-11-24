@@ -1,6 +1,6 @@
 "use client";
 
-import { Chain, EstimateFeesPerGasReturnType, Hash, Hex } from "viem";
+import { Chain, EstimateFeesPerGasReturnType, Hash, Hex, parseEther } from "viem";
 import { smartWallet } from "@/libs/smart-wallet";
 import { useEffect, useRef, useState } from "react";
 import { Flex, Link, Button, Heading, Text, TextField, Callout } from "@radix-ui/themes";
@@ -55,10 +55,10 @@ export default function SendTxModal() {
   function handleUserInputAmount(e: any) {
     const value = e.target.value;
     const amount = Number(value);
-    if ((amount > balance && value !== "") || value === "") {
+    if ((amount > Number(balance) && value !== "") || value === "") {
       setIsBelowBalance(false);
     }
-    if (amount <= balance && value !== "") {
+    if (amount <= Number(balance) && value !== "") {
       setIsBelowBalance(true);
     }
     setUserInputAmount(value);
@@ -112,12 +112,13 @@ export default function SendTxModal() {
       ).json();
       const { maxFeePerGas, maxPriorityFeePerGas }: EstimateFeesPerGasReturnType =
         await smartWallet.client.estimateFeesPerGas();
+
       const userOp = await builder.buildUserOp({
         calls: [
           {
             dest: destination.toLowerCase() as Hex,
             value:
-              (BigInt(userInputAmount) * BigInt(1e18)) /
+              BigInt(parseEther(userInputAmount)) /
               (BigInt(Math.trunc(price.ethereum.usd * 100)) / BigInt(100)), // 100 is the price precision
             data: emptyHex,
           },
@@ -259,6 +260,7 @@ export default function SendTxModal() {
                         min={0}
                         max={balance?.toString() || 0}
                         size={"3"}
+                        step={0.01}
                         // style={{ paddingRight: "1rem" }}
                         value={userInputAmount}
                         onChange={handleUserInputAmount}
