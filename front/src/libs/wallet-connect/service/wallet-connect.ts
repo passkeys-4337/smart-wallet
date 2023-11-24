@@ -9,7 +9,7 @@ import {
   EthSendTransactionParams,
 } from "@/libs/wallet-connect/config/EIP155";
 import { EthEvent, WCChains } from "@/libs/wallet-connect/config/common";
-import { smartWallet } from "@/libs/smart-wallet/service/smart-wallet";
+import { Hash } from "viem";
 
 export interface IWalletConnectConfig {
   projectId: string;
@@ -33,6 +33,13 @@ export interface IPairingRejectedEventPayload {
   pairingTopic: string;
   msg: string;
 }
+
+export type EthSendEventPayload = {
+  params: EthSendTransactionParams;
+  origin: string;
+  onSuccess: (hash: Hash) => void;
+  onReject: () => Promise<void>;
+};
 
 /**
  *  WalletConnect
@@ -160,6 +167,7 @@ class WalletConnect extends EventEmitter {
         pairingTopic: params.pairingTopic,
       });
       this._setSessions();
+      // switch to Sepolia
     } catch (error) {
       await this._web3wallet.rejectSession({
         id,
@@ -174,19 +182,36 @@ class WalletConnect extends EventEmitter {
 
   private async _onSessionRequest(event: Web3WalletTypes.SessionRequest): Promise<void> {
     if (!this._web3wallet) return;
-    const { topic, params, id } = event;
+    const { topic, params, id, verifyContext } = event;
     const { request } = params;
 
-    const result = this._jsonRpcEventRouter(request.method, request.params);
-
-    // const { request } = params;
-    // const requestParamsMessage = request.params[0];
-    // convert `requestParamsMessage` by using a method like hexToUtf8
-    // const message = hexToUtf8(requestParamsMessage);
-    const response = { id, result, jsonrpc: "2.0" };
-    await this._web3wallet.respondSessionRequest({
-      topic,
-      response,
+    this._jsonRpcEventRouter({
+      method: request.method,
+      params: request.params,
+      origin: verifyContext.verified.origin?.split("https://")[1] ?? "",
+      onSuccess: async (hash) => {
+        const response = { id, result: hash, jsonrpc: "2.0" };
+        await this._web3wallet?.respondSessionRequest({
+          topic,
+          response,
+        });
+        return;
+      },
+      onReject: async () => {
+        const response = {
+          id,
+          jsonrpc: "2.0",
+          error: {
+            code: 5000,
+            message: "User rejected.",
+          },
+        };
+        await this._web3wallet?.respondSessionRequest({
+          topic,
+          response,
+        });
+        return;
+      },
     });
   }
 
@@ -208,10 +233,28 @@ class WalletConnect extends EventEmitter {
     return accounts;
   }
 
-  private _jsonRpcEventRouter(method: string, params: any) {
+  private _jsonRpcEventRouter({
+    method,
+    params,
+    origin,
+    onSuccess,
+    onReject,
+  }: {
+    method: string;
+    params: any[];
+    origin: string;
+    onSuccess: (hash: Hash) => void;
+    onReject: () => Promise<void>;
+  }) {
     switch (method) {
       case EIP155Method.EthSendTransaction:
-        this.emit(WCEvent.EthSendTransaction, params[0] as EthSendTransactionParams);
+        this.emit(WCEvent.EthSendTransaction, {
+          params: params[0] as EthSendTransactionParams,
+          origin,
+          onSuccess,
+          onReject,
+        } as EthSendEventPayload);
+        return null;
 
       default:
         this.emit(WCEvent.MethodNotSupported, method);

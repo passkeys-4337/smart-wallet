@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Portal, Box } from "@radix-ui/themes";
 import styled from "@emotion/styled";
-import { useTheme } from "next-themes";
 
 const PortalContainer = styled(Portal)<{ isopen: Boolean | undefined }>`
   position: absolute;
@@ -72,9 +71,12 @@ function useModalHook() {
   const [content, setContent] = useState<React.ReactNode>(null);
   const [isOpen, setIsOpen] = useState<Boolean>(false);
   const [isBackdrop, setIsBackdrop] = useState<Boolean>(false);
-  const { theme } = useTheme();
 
-  function open(content: React.ReactNode) {
+  const closeCb = useRef<any>(null);
+
+  function open(content: React.ReactNode, onCloseCb?: () => Promise<void>) {
+    closeCb.current = onCloseCb;
+
     if (isOpen) {
       setContent(null);
       setIsOpen(false);
@@ -91,6 +93,8 @@ function useModalHook() {
   }
 
   function close() {
+    closeCb.current && closeCb.current();
+    closeCb.current = null;
     setContent(null);
     setIsOpen(false);
     setIsBackdrop(false);

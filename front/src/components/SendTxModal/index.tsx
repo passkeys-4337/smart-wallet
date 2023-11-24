@@ -24,17 +24,16 @@ export default function SendTxModal() {
   const [txReceipt, setTxReceipt] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any>(null);
-  const { me } = useMe();
-  const { balance, refreshBalance } = useBalance();
-
   const [userInputDestination, setUserInputDestination] = useState("");
   const [userInputAmount, setUserInputAmount] = useState("");
   const [isBelowBalance, setIsBelowBalance] = useState(false);
-
   const [ensIsLoading, setEnsIsLoading] = useState(false);
   const [destination, setDestination] = useState("");
+  const { me } = useMe();
+  const { balance, refreshBalance } = useBalance();
 
   const addressInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const input = addressInputRef.current as HTMLInputElement;
     if (!input) return;
@@ -261,7 +260,6 @@ export default function SendTxModal() {
                         max={balance?.toString() || 0}
                         size={"3"}
                         step={0.01}
-                        // style={{ paddingRight: "1rem" }}
                         value={userInputAmount}
                         onChange={handleUserInputAmount}
                       />

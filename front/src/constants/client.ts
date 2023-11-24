@@ -1,14 +1,11 @@
-import { createPublicClient, fallback, http } from "viem";
+import { createPublicClient, http } from "viem";
 import { sepolia, mainnet } from "viem/chains";
 
 export const CHAIN = {
   ...sepolia,
 };
 
-export const transport = fallback([
-  http("https://rpc.notadegen.com/eth/sepolia"),
-  http("https://gateway.tenderly.co/public/sepolia	"),
-]);
+export const transport = http(process.env.NEXT_PUBLIC_RPC_ENDPOINT);
 
 export const PUBLIC_CLIENT = createPublicClient({
   chain: sepolia,

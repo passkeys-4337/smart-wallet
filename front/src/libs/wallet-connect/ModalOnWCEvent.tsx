@@ -2,18 +2,26 @@
 
 import React, { useEffect } from "react";
 import { useModal } from "@/providers/ModalProvider";
-import { EthSendTransactionParams } from "./config/EIP155";
-import WCSendTransactionModal from "@/components/WCSendTransactionModal";
-import { WCEvent, walletConnect } from "./service/wallet-connect";
+import { EthSendEventPayload, WCEvent, walletConnect } from "./service/wallet-connect";
 import WCNotSupportedModal from "@/components/WCNotSupportedModal";
+import WCSendTransactionModal from "@/components/WCSendTransactionModal";
 
 export function ModalOnWCEvent({ children }: { children: React.ReactNode }) {
   const { open } = useModal();
 
   useEffect(() => {
-    function handleEthSendTransaction(params: EthSendTransactionParams) {
-      open(<WCSendTransactionModal params={params} />);
+    function handleEthSendTransaction({
+      params,
+      origin,
+      onSuccess,
+      onReject,
+    }: EthSendEventPayload) {
+      open(
+        <WCSendTransactionModal params={params} origin={origin} onSuccess={onSuccess} />,
+        onReject,
+      );
     }
+
     function handleMethodNotSupported(method: string) {
       open(<WCNotSupportedModal method={method} />);
     }
