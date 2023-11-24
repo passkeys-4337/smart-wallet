@@ -47,12 +47,10 @@ export async function POST(req: Request) {
 
   // send 1 wei to the user
   // so that anyone can send a transaction to the user's smart wallet
-  const hash2 = await walletClient.sendTransaction({
+  walletClient.sendTransaction({
     to: createdUser.account,
     value: BigInt(1),
   });
-
-  await publicClient.waitForTransactionReceipt({ hash: hash2 });
 
   return Response.json({ ...createdUser, id: toHex(createdUser.id) });
 }
