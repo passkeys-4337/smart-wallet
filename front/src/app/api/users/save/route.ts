@@ -1,6 +1,6 @@
-import { CHAIN } from "@/constants";
+import { CHAIN, PUBLIC_CLIENT, transport } from "@/constants";
 import { FACTORY_ABI } from "@/constants/factory";
-import { Hex, createPublicClient, createWalletClient, http, toHex, zeroAddress } from "viem";
+import { Hex, createWalletClient, toHex, zeroAddress } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 export async function POST(req: Request) {
@@ -10,15 +10,10 @@ export async function POST(req: Request) {
   const walletClient = createWalletClient({
     account,
     chain: CHAIN,
-    transport: http(),
+    transport,
   });
 
-  const publicClient = createPublicClient({
-    chain: CHAIN,
-    transport: http(),
-  });
-
-  const user = await publicClient.readContract({
+  const user = await PUBLIC_CLIENT.readContract({
     address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
     abi: FACTORY_ABI,
     functionName: "getUser",
@@ -29,28 +24,41 @@ export async function POST(req: Request) {
     return Response.json(undefined);
   }
 
-  const hash = await walletClient.writeContract({
+  await walletClient.writeContract({
     address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
     abi: FACTORY_ABI,
     functionName: "saveUser",
     args: [BigInt(id), pubKey],
   });
 
-  await publicClient.waitForTransactionReceipt({ hash });
-
-  const createdUser = await publicClient.readContract({
+  const smartWalletAddress = await PUBLIC_CLIENT.readContract({
     address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
     abi: FACTORY_ABI,
-    functionName: "getUser",
-    args: [BigInt(id)],
+    functionName: "getAddress",
+    args: [pubKey],
   });
+
+  // await PUBLIC_CLIENT.waitForTransactionReceipt({ hash });
+
+  // const createdUser = await PUBLIC_CLIENT.readContract({
+  //   address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
+  //   abi: FACTORY_ABI,
+  //   functionName: "getUser",
+  //   args: [BigInt(id)],
+  // });
 
   // send 1 wei to the user
   // so that anyone can send a transaction to the user's smart wallet
-  walletClient.sendTransaction({
-    to: createdUser.account,
+  await walletClient.sendTransaction({
+    to: smartWalletAddress,
     value: BigInt(1),
   });
 
-  return Response.json({ ...createdUser, id: toHex(createdUser.id) });
+  const createdUser = {
+    id,
+    account: smartWalletAddress,
+    pubKey,
+  };
+
+  return Response.json(createdUser);
 }

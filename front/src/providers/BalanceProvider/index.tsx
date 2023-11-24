@@ -3,7 +3,7 @@
 import { getUser } from "@/libs/factory/getUser";
 import { useMe } from "@/providers/MeProvider";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { Hex, formatEther } from "viem";
+import { Hex, formatEther, zeroAddress } from "viem";
 
 function useBalanceHook() {
   // balance in usd
@@ -14,6 +14,11 @@ function useBalanceHook() {
 
   const getBalance = useCallback(async (keyId: Hex) => {
     const user = await getUser(keyId);
+    if (user?.account === zeroAddress || user?.account === undefined) {
+      setBalance("0.00");
+      return;
+    }
+
     console.log(user.balance);
     const priceData = await fetch("/api/price?ids=ethereum&currencies=usd");
     const price: number = Math.trunc((await priceData.json()).ethereum.usd * 100);

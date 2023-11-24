@@ -91,4 +91,23 @@ export const FACTORY_ABI = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "bytes32[2]",
+        name: "publicKey",
+        type: "bytes32[2]",
+      },
+    ],
+    name: "getAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ] as const;
