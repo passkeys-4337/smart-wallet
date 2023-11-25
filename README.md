@@ -1,33 +1,50 @@
-# Smart Wallet Account Abstraction / Passkeys
+# ERC-4337 Smart Wallet controlled by Passkeys
 
-**An educational project of Smart Wallet using Passkeys to sign user actions and control an ERC-4337 smart contract account.**
-An open source contribution with Passkeys and ERC-4337 standard.
+A Smart Wallet using Passkeys to sign user actions and control an ERC-4337 smart contract account. We designed this project as an open source contribution to the current research made by the Web3 community around account abstraction and better users onboarding.
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-red.svg?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0)
-[![Sepolia Testnet](https://img.shields.io/badge/Sepolia%20testnet-blue?style=for-the-badge&logo=ethereum&label=deployed%20on)](https://passkeys-4337.vercel.app/)
-</br>
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-red.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Sepolia Testnet](https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on)](https://passkeys-4337.vercel.app/)
+[![ERC-4337](https://img.shields.io/badge/4337-teal?&label=ERC)](https://passkeys-4337.vercel.app/)
+[![Passkeys](https://img.shields.io/badge/Passkeys-teal?&label=Auth)](https://w3c.github.io/webauthn/)
 
-## Problem to solve
+[![Twitter Follow](https://img.shields.io/twitter/follow/BigQ?style=social)](https://twitter.com/big_q__)
+[![Twitter Follow](https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social)](https://twitter.com/Baoufa)
 
-Onboarding new users into blockchain applications is a challenge. Current onboarding UX revolves around the creation of mnemonics that need to be handled either by the user himself or by the dApp in order to recover accounts. It often ends into combining poor user experience and/or introducing security risks.
+Test it the demo here: https://passkeys-4337.vercel.app/
+
+## Project Summary
+
+Onboarding new users into blockchain applications is a challenge. Current solutions revolve around the creation of mnemonics that need to be handled either by the user himself or by the web3 App. It often ends into combining poor user experience and/or introducing security risks.
 
 By using passkeys to control accounts, we abstract away the need for users to store mnemonics, and we allow users to use a familiar interface to control their accounts (biometric authentication) in a one click UX.
 
-### Solution Summary
+Our wallet is meant to be a implementation of the [ERC-4337 standard](https://github.com/eth-infinitism/account-abstraction), that allow users to have an account in the form of a smart contract, controlled by whatever logic they want. In this case, we use passkeys to let users control their account thanks to the onchain P256 signature verification developed by [Daimo](https://github.com/daimo-eth/p256-verifier).
 
-Our wallet is meant to be a simple implementation of the [ERC-4337 standard](https://github.com/eth-infinitism/account-abstraction), that allow users to have an account in the form of a smart contract, controlled by whatever logic they want. In this case, we use passkeys to let users control their account thanks to onchain signature verification developed by [Daimo](https://github.com/daimo-eth/p256-verifier). We wanted to explore the possibilities of this two technologies, and how they can be used together to create a more user friendly experience, while ensuring security.
+We wanted to explore the possibilities of this two technologies, and how they can be used together to create a more user friendly experience, while ensuring security.
 
 The wallet is designed to be simple, with minimal dependencies, only on Sepolia testnet. It is meant to be used as a user friendly proof of concept for the ERC-4337 standard, and to showcase the possibilities of passkeys. It is not meant to be used in any production network in this state. Hopefully, it will inspire other developers to create more user friendly applications that use passkeys/ERC-4337 and help new developers understand how to use these technologies in a codebase.
 
-We were strongly inspired by the work of:
+### Why Passkeys?
+
+Passkeys are a new way to authenticate users, that are more secure than passwords, and more user friendly than mnemonics. Our aim is to make blockchain applications more accessible to the general public, and we believe that passkeys are a great way to do so. Our UI strives in making it easy for users to create, retrieve existing accounts and sign transactions via Passkeys. As a user, all notion of passkeys are abstracted and you just need to remember a simple username to access your account.
+
+### Mobile first?
+
+While being built with NextJS for ease of development and education purposes, our wallet is designed to be easy to use on mobile. Grab your phone, proceed to a biometric authentication, and you can start using your account in a few seconds.
+
+### Wallet Connect support?
+
+We support Wallet Connect in a very minimal way. We only allow you to connect to your account and send transactions. We do not support signing messages or any other features. This is a proof of concept, and we wanted to keep it simple while educational about this other technology.
+
+### Acknowledgments
+
+This project was meant possible thanks to the building blocks previously made by the following teams. Thank you to all of them for their work!
 
 - [Daimo](https://github.com/daimo-eth) and their [p256-verifier](https://github.com/daimo-eth/p256-verifier) for the onchain signature verification
 - [Infinitism](https://github.com/eth-infinitism/) and their work around [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337)
 - [StackUp](https://www.stackup.sh/) and their work for the [Bundler node implementation](https://docs.stackup.sh/)
 - [Matthew Miller](https://twitter.com/iamkale) and his work around [WebAuthn](https://github.com/MasterKale/SimpleWebAuthn)
 - [Webauthn.io](https://webauthn.guide/) for their great documentation around WebAuthn and their [demo](https://webauthn.io/)
-
-Thank you to all of them for their work!
 
 <table>
   <tr>
@@ -65,18 +82,6 @@ Thank you to all of them for their work!
     </td>
   </tr>
 </table>
-
-### Why Passkeys?
-
-Passkeys are a new way to authenticate users, that are more secure than passwords, and more user friendly than mnemonics. Our aim is to make blockchain applications more accessible to the general public, and we believe that passkeys are a great way to do so. Our UI strives in making it easy for users to create, retrieve existing accounts and sign transactions via Passkeys. As a user, all notion of passkeys are abstracted and you just need to remember a simple username to access your account.
-
-### Mobile first?
-
-While being built with NextJS for ease of development and education purposes, our wallet is designed to be easy to use on mobile. Grab your phone, proceed to a biometric authentication, and you can start using your account in a few seconds.
-
-### Wallet Connect support?
-
-We support Wallet Connect in a very minimal way. We only allow you to connect to your account and send transactions. We do not support signing messages or any other features. This is a proof of concept, and we wanted to keep it simple while educational about this other technology.
 
 ## How does it work?
 
