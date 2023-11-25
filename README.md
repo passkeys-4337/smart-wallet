@@ -1,13 +1,19 @@
-# ERC-4337 contract wallet controlled by Passkey
+# Smart Wallet Account Abstraction / Passkeys
 
-<div>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/qi9xSXJKRIc?si=Z9nnkLWnSxkxx1ld&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-<p>test</p>
-</div>
+**An educational project of Smart Wallet using Passkeys to sign user actions and control an ERC-4337 smart contract account.**
+An open source contribution with Passkeys and ERC-4337 standard.
 
-## Description
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-red.svg?style=for-the-badge)](https://www.gnu.org/licenses/gpl-3.0)
+[![Sepolia Testnet](https://img.shields.io/badge/Sepolia%20testnet-blue?style=for-the-badge&logo=ethereum&label=deployed%20on)](https://passkeys-4337.vercel.app/)
+</br>
 
-Onboarding new users into blockchain applications is a challenge. UX revolves around mnemonics that need to be stored to recover accounts on users wallets, effectively introducing security risks. By using passkeys to control accounts, we abstract away the need for users to store mnemonics, and allow them to use a familiar interface to control their accounts (via biometric authentication for example).
+## Problem to solve
+
+Onboarding new users into blockchain applications is a challenge. Current onboarding UX revolves around the creation of mnemonics that need to be handled either by the user himself or by the dApp in order to recover accounts. It often ends into combining poor user experience and/or introducing security risks.
+
+By using passkeys to control accounts, we abstract away the need for users to store mnemonics, and we allow users to use a familiar interface to control their accounts (biometric authentication) in a one click UX.
+
+### Solution Summary
 
 Our wallet is meant to be a simple implementation of the [ERC-4337 standard](https://github.com/eth-infinitism/account-abstraction), that allow users to have an account in the form of a smart contract, controlled by whatever logic they want. In this case, we use passkeys to let users control their account thanks to onchain signature verification developed by [Daimo](https://github.com/daimo-eth/p256-verifier). We wanted to explore the possibilities of this two technologies, and how they can be used together to create a more user friendly experience, while ensuring security.
 
@@ -22,6 +28,43 @@ We were strongly inspired by the work of:
 - [Webauthn.io](https://webauthn.guide/) for their great documentation around WebAuthn and their [demo](https://webauthn.io/)
 
 Thank you to all of them for their work!
+
+<table>
+  <tr>
+    <td style="font-size: 90%;">
+        <p><b>Table of Contents</b></p>
+      <ul>
+        <li><a href="#description">Description</a></li>
+        <li><a href="#why-passkeys">Why Passkeys?</a></li>
+        <li><a href="#mobile-first">Mobile First?</a></li>
+        <li><a href="#wallet-connect-support">Wallet Connect Support</a></li>
+        <li><a href="#how-does-it-work">How Does It Work?</a>
+          <ul>
+            <li><a href="#creating-an-account">Creating an Account</a>
+              <ul>
+                <li><a href="#passkey-generation">Passkey Generation</a></li>
+                <li><a href="#user-creation">User Creation</a></li>
+              </ul>
+            </li>
+            <li><a href="#smart-account-creation">Smart Account Creation</a></li>
+            <li><a href="#onchain-interactions-via-useroperations">Onchain Interactions via UserOperations</a></li>
+            <li><a href="#retrieving-an-account">Retrieving an Account</a></li>
+          </ul>
+        </li>
+        <li><a href="#how-to-use-it-on-sepolia-testnet">How to Use It? (on Sepolia Testnet)</a></li>
+        <li><a href="#how-to-run-it-locally">How to Run It Locally?</a>
+          <ul>
+            <li><a href="#requirements">Requirements</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#run">Run</a></li>
+            <li><a href="#deploy-your-own-smart-account-factory-optional">Deploy Your Own Smart Account Factory (Optional)</a></li>
+          </ul>
+        </li>
+        <li><a href="#acknowledgments">Acknowledgments</a></li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ### Why Passkeys?
 
