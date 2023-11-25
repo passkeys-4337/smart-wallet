@@ -1,5 +1,7 @@
 # ERC-4337 contract wallet controlled by Passkey
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qi9xSXJKRIc?si=Z9nnkLWnSxkxx1ld&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 ## Description
 
 Onboarding new users into blockchain applications is a challenge. UX revolves around mnemonics that need to be stored to recover accounts on users wallets, effectively introducing security risks. By using passkeys to control accounts, we abstract away the need for users to store mnemonics, and allow them to use a familiar interface to control their accounts (via biometric authentication for example).
@@ -9,6 +11,7 @@ Our wallet is meant to be a simple implementation of the [ERC-4337 standard](htt
 The wallet is designed to be simple, with minimal dependencies, only on Sepolia testnet. It is meant to be used as a user friendly proof of concept for the ERC-4337 standard, and to showcase the possibilities of passkeys. It is not meant to be used in any production network in this state. Hopefully, it will inspire other developers to create more user friendly applications that use passkeys/ERC-4337 and help new developers understand how to use these technologies in a codebase.
 
 We were strongly inspired by the work of:
+
 - [Daimo](https://github.com/daimo-eth) and their [p256-verifier](https://github.com/daimo-eth/p256-verifier) for the onchain signature verification
 - [Infinitism](https://github.com/eth-infinitism/) and their work around [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337)
 - [StackUp](https://www.stackup.sh/) and their work for the [Bundler node implementation](https://docs.stackup.sh/)
@@ -61,6 +64,7 @@ On your first visit, create an account by entering a username. You will be asked
 ## How to run it locally?
 
 ### Requirements
+
 - [pnpm](https://pnpm.io/installation)
 - [StackUp API KEY](https://app.stackup.sh/sign-in) (to be able to include UserOperations in blocks, see [.env.local.example](./front/.env.local.example)))
 - a **TESTING** account with some Sepolia funds, to be able to sponsor user creation (see [.env.local.example](./front/.env.local.example)). Be careful to not use any private key tied to some real funds. **DO NOT LEAK YOUR PRIVATE KEYS**.
@@ -76,6 +80,7 @@ pnpm install
 ```
 
 Before running the front, you need to update the `.env.local` file with your own values. You can find an example in [.env.local.example](./front/.env.local.example).
+
 ```bash
 cp .env.local.example .env.local
 
