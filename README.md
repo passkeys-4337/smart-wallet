@@ -9,11 +9,11 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 
 <div align="center">
 <a href="https://www.gnu.org/licenses/gpl-3.0">
-<img src="https://img.shields.io/badge/License-GPLv3-red.svg" alt="GPLv3"/>
+  <img src="https://img.shields.io/badge/License-GPLv3-red.svg" alt="GPLv3"/>
 </a>
 
 <a href="https://passkeys-4337.vercel.app/">
-<img src="https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on" alt="Sepolia testnet"/>
+  <img src="https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on" alt="Sepolia testnet"/>
 </a>
 
 <a href="https://passkeys-4337.vercel.app/">
@@ -33,6 +33,8 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 <img src="https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social" alt="Twitter Follow"/>
 </a>
 </div>
+
+</br>
 
 <div align="center">
   <a href="https://www.youtube.com/watch?v=Z2gfLdU8NAU" target="_blank" >
