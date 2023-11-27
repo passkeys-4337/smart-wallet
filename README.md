@@ -3,19 +3,33 @@
 <h1 align="center" style="margin-bottom: 0">ERC-4337 Smart Wallet controlled with Passkeys</h1>
 <p align="center">An open source contribution to the Web3 community around account abstraction and improved user onboarding.</br>
 Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passkeys-4337.vercel.app</a></p>
+
+<a href="https://www.gnu.org/licenses/gpl-3.0">
+<img src="https://img.shields.io/badge/License-GPLv3-red.svg" alt="GPLv3"/>
+</a>
+<a href="https://passkeys-4337.vercel.app/">
+<img src="https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on" alt="Sepolia testnet"/>
+</a>
+<a href="https://passkeys-4337.vercel.app/">
+<img src="https://img.shields.io/badge/4337-teal?&label=ERC" alt="ERC-4337"/>
+</a>
+<a href="https://w3c.github.io/webauthn/">
+<img src="https://img.shields.io/badge/Passkeys-teal?&label=Auth" alt="Passkeys"/>
+</a>
+
+<a href="https://twitter.com/big_q__">
+<img src="https://img.shields.io/twitter/follow/BigQ?style=social" alt="Twitter Follow"/>
+</a>
+<a href="https://twitter.com/Baoufa">
+<img src="https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social" alt="Twitter Follow"/>
+</a>
+
 </div>
 </br>
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-red.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Sepolia Testnet](https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on)](https://passkeys-4337.vercel.app/)
-[![ERC-4337](https://img.shields.io/badge/4337-teal?&label=ERC)](https://passkeys-4337.vercel.app/)
-[![Passkeys](https://img.shields.io/badge/Passkeys-teal?&label=Auth)](https://w3c.github.io/webauthn/)</br>
-[![Twitter Follow](https://img.shields.io/twitter/follow/BigQ?style=social)](https://twitter.com/big_q__)
-[![Twitter Follow](https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social)](https://twitter.com/Baoufa)
-
 <div align="center">
-  <a href="https://www.youtube.com/embed/Z2gfLdU8NAU?si=N6PpRAtvXWyn9dAV" target="_blank" width="300">
-  <img src="https://i.imgur.com/ZaBW1Ci.png" />
+  <a href="https://www.youtube.com/embed/Z2gfLdU8NAU?si=N6PpRAtvXWyn9dAV" target="_blank" >
+  <img src="https://i.imgur.com/ZaBW1Ci.png" width="400"/>
   </a>
 </div>
 
