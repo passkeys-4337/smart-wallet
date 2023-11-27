@@ -6,20 +6,14 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 </div>
 </br>
 
-<div align="center">
-<span>
 <a href="https://www.gnu.org/licenses/gpl-3.0">
   <img src="https://img.shields.io/badge/License-GPLv3-red.svg" alt="GPLv3"/>
 </a>
-</span>
 
-<span>
 <a href="https://passkeys-4337.vercel.app/">
   <img src="https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on" alt="Sepolia testnet"/>
 </a>
-</span>
 
-<!--
 <a href="https://passkeys-4337.vercel.app/">
 <img src="https://img.shields.io/badge/4337-teal?&label=ERC" alt="ERC-4337"/>
 </a>
@@ -28,15 +22,13 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 <img src="https://img.shields.io/badge/Passkeys-teal?&label=Auth" alt="Passkeys"/>
 </a>
 
-</br>
 <a href="https://twitter.com/big_q__">
 <img src="https://img.shields.io/twitter/follow/BigQ?style=social" alt="Twitter Follow"/>
 </a>
 
 <a href="https://twitter.com/Baoufa">
 <img src="https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social" alt="Twitter Follow"/>
-</a> -->
-</div>
+</a>
 
 </br>
 
