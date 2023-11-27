@@ -3,17 +3,15 @@
 <h1 align="center" style="margin-bottom: 0">ERC-4337 Smart Wallet controlled with Passkeys</h1>
 <p align="center">An open source contribution to the Web3 community around account abstraction and improved user onboarding.</br>
 Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passkeys-4337.vercel.app</a></p>
-
 </div>
 </br>
 
 <div align="center">
-<p>
 <a href="https://www.gnu.org/licenses/gpl-3.0">
   <img src="https://img.shields.io/badge/License-GPLv3-red.svg" alt="GPLv3"/>
 </a>
 
-<a href="https://passkeys-4337.vercel.app/">
+<!-- <a href="https://passkeys-4337.vercel.app/">
   <img src="https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on" alt="Sepolia testnet"/>
 </a>
 
@@ -32,8 +30,7 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 
 <a href="https://twitter.com/Baoufa">
 <img src="https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social" alt="Twitter Follow"/>
-</a>
-</p>
+</a> -->
 </div>
 
 </br>
