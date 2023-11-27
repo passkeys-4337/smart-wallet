@@ -1,5 +1,5 @@
-<div>
-<img align="center" src="https://passkeys-4337.vercel.app/favicon.ico" width="100"/>
+<div align="center">
+<img src="https://passkeys-4337.vercel.app/favicon.ico" width="100"/>
 <h1 align="center" style="margin-bottom: 0">ERC-4337 Smart Wallet controlled with Passkeys</h1>
 <p align="center">An open source contribution to the Web3 community around account abstraction and improved user onboarding.</br>
 Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passkeys-4337.vercel.app</a></p>
