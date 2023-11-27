@@ -13,15 +13,6 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 [![Twitter Follow](https://img.shields.io/twitter/follow/BigQ?style=social)](https://twitter.com/big_q__)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social)](https://twitter.com/Baoufa)
 
-<div>
-<p style="margin: 0"><b>Table of content</b></p>
-<ol style="margin: 0">
-  <li><a href="#project-summary">Project Summary</a></li>
-  <li><a href="#how-does-it-work">How does it work?</a></li>
-  <li><a href="#installation-on-your-local-environment">Installation on your local environment</a></li>
-</ol>
-</div>
-
 # Project Summary
 
 Onboarding new users into blockchain applications is a challenge. Current solutions revolves around mnemonics that need to be stored to recover accounts on users wallets, effectively introducing security risks. By using passkeys to control accounts, we abstract away the need for users to store mnemonics and we allow users to use a familiar interface to control their accounts (biometric authentication) in one click UX.
