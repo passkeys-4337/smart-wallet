@@ -1,20 +1,23 @@
-# ERC-4337 Smart Wallet controlled by Passkeys
+<div style="display: flex; align-items: center; flex-direction: column">
+<img style="margin: auto;" src="https://passkeys-4337.vercel.app/favicon.ico" width="50"/>
+<h1 style="text-align:center; margin-bottom: 0">ERC-4337 Smart Wallet controlled with Passkeys</h1>
+</div>
 
-A Smart Wallet using Passkeys to sign user actions and control an ERC-4337 smart contract account. We designed this project as an open source contribution to the current research made by the Web3 community around account abstraction and better users onboarding.
+<p style="text-align:center">An open source contribution to the current research made by the Web3 community around account abstraction and improved users onboarding.</br>
+Live demo app: <a href="https://passkeys-4337.vercel.app">passkeys-4337.vercel.app</a>
+</p>
+</br>
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-red.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Sepolia Testnet](https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on)](https://passkeys-4337.vercel.app/)
 [![ERC-4337](https://img.shields.io/badge/4337-teal?&label=ERC)](https://passkeys-4337.vercel.app/)
-[![Passkeys](https://img.shields.io/badge/Passkeys-teal?&label=Auth)](https://w3c.github.io/webauthn/)
-
+[![Passkeys](https://img.shields.io/badge/Passkeys-teal?&label=Auth)](https://w3c.github.io/webauthn/)</br>
 [![Twitter Follow](https://img.shields.io/twitter/follow/BigQ?style=social)](https://twitter.com/big_q__)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social)](https://twitter.com/Baoufa)
 
-Test it the demo here: https://passkeys-4337.vercel.app/
+# Project Summary
 
-## Project Summary
-
-Onboarding new users into blockchain applications is a challenge. Current solutions revolve around the creation of mnemonics that need to be handled either by the user himself or by the web3 App. It often ends into combining poor user experience and/or introducing security risks.
+Onboarding new users into blockchain applications is a challenge. Current solutions revolve around the creation of mnemonics that need to be handled either by the user himself or by the Web3 App. It often ends into combining poor user experience and/or introducing security risks.
 
 By using passkeys to control accounts, we abstract away the need for users to store mnemonics, and we allow users to use a familiar interface to control their accounts (biometric authentication) in a one click UX.
 
@@ -46,43 +49,6 @@ This project was meant possible thanks to the building blocks previously made by
 - [Matthew Miller](https://twitter.com/iamkale) and his work around [WebAuthn](https://github.com/MasterKale/SimpleWebAuthn)
 - [Webauthn.io](https://webauthn.guide/) for their great documentation around WebAuthn and their [demo](https://webauthn.io/)
 
-<table>
-  <tr>
-    <td style="font-size: 90%;">
-        <p><b>Table of Contents</b></p>
-      <ul>
-        <li><a href="#description">Description</a></li>
-        <li><a href="#why-passkeys">Why Passkeys?</a></li>
-        <li><a href="#mobile-first">Mobile First?</a></li>
-        <li><a href="#wallet-connect-support">Wallet Connect Support</a></li>
-        <li><a href="#how-does-it-work">How Does It Work?</a>
-          <ul>
-            <li><a href="#creating-an-account">Creating an Account</a>
-              <ul>
-                <li><a href="#passkey-generation">Passkey Generation</a></li>
-                <li><a href="#user-creation">User Creation</a></li>
-              </ul>
-            </li>
-            <li><a href="#smart-account-creation">Smart Account Creation</a></li>
-            <li><a href="#onchain-interactions-via-useroperations">Onchain Interactions via UserOperations</a></li>
-            <li><a href="#retrieving-an-account">Retrieving an Account</a></li>
-          </ul>
-        </li>
-        <li><a href="#how-to-use-it-on-sepolia-testnet">How to Use It? (on Sepolia Testnet)</a></li>
-        <li><a href="#how-to-run-it-locally">How to Run It Locally?</a>
-          <ul>
-            <li><a href="#requirements">Requirements</a></li>
-            <li><a href="#installation">Installation</a></li>
-            <li><a href="#run">Run</a></li>
-            <li><a href="#deploy-your-own-smart-account-factory-optional">Deploy Your Own Smart Account Factory (Optional)</a></li>
-          </ul>
-        </li>
-        <li><a href="#acknowledgments">Acknowledgments</a></li>
-      </ul>
-    </td>
-  </tr>
-</table>
-
 ## How does it work?
 
 ### Creating an account
@@ -91,15 +57,15 @@ This project was meant possible thanks to the building blocks previously made by
 
 When you create an account, a passkey is generated and stored in your device or your password manager. This passkey is tied to an id. This is worth noting that the passkey is never managed by the wallet itself, the wallet only uses the browser API to interact with it. Basically, the wallet asks for signatures and your device/password manager handles the rest. This is a very important security feature, as it means that the wallet never has access to your passkey, and cannot be compromised to steal it.
 
-#### User creation
+### User creation
 
 Once the passkey is generated, the browser API returns a public key and an id. These public information are stored onchain and used to identify your account.
 
-### Smart Account creation
+## Smart Account creation
 
 The Smart Account is the contract implementing the ERC-4337 standard. Its address is deterministically computed from the public key of the user. This contract implements all the logic to verify signatures, effectively allowing the user to operate onchain actions thanks to their passkey. The contract is not deployed when the passkey is generated to avoid paying huge gas fees for a contract that might never be used. Instead, it is deployed when the user first interacts with the contract.
 
-### Onchain interactions via UserOperations
+## Onchain interactions via UserOperations
 
 The ERC-4337 standard revolves around UserOperations, which are basically objects replacing transactions and that are sent on behalf of the user by nodes known as [`Bundlers`](https://docs.stackup.sh/docs/erc-4337-bundler#:~:text=In%20ERC%2D4337%2C%20a%20Bundler,work%20on%20any%20EVM%20network.). UserOperations are signed by the user with their passkey and the bundler's job is to include them in a block while taking a little fee for the work. In our case, we use the [StackUp Bundler node implementation](https://docs.stackup.sh/). We strongly advise you to look at Stackup documentation and the ERC-4337 EIP to understand how Bundlers work.
 
@@ -112,14 +78,16 @@ Retrieving an account, is simply done by using the browser API. The wallet will 
 The wallet can be found at: https://passkeys-4337.vercel.app/
 On your first visit, create an account by entering a username. You will be asked to authenticate with your device (biometric authentication for example). Once done, you will be redirected to your account page. You can then see your address, balance, send transactions to other accounts, or connect to other applications via Wallet Connect.
 
-## How to run it locally?
+---
+
+## Installation on your local environment
 
 ### Requirements
 
 - [pnpm](https://pnpm.io/installation)
-- [StackUp API KEY](https://app.stackup.sh/sign-in) (to be able to include UserOperations in blocks, see [.env.local.example](./front/.env.local.example)))
+- [StackUp API KEY](https://app.stackup.sh/sign-in): to be able to include UserOperations in blocks, see [.env.local.example](./front/.env.local.example)
 - a **TESTING** account with some Sepolia funds, to be able to sponsor user creation (see [.env.local.example](./front/.env.local.example)). Be careful to not use any private key tied to some real funds. **DO NOT LEAK YOUR PRIVATE KEYS**.
-- [Foundry](https://book.getfoundry.sh/getting-started/installation) (if you want to deploy your own contracts)
+- [Foundry](https://book.getfoundry.sh/getting-started/installation): if you want to deploy your own contracts.
 
 ### Installation
 
@@ -134,7 +102,6 @@ Before running the front, you need to update the `.env.local` file with your own
 
 ```bash
 cp .env.local.example .env.local
-
 # Then update the values of the StackUp API KEY and the TESTING private key
 ```
 
@@ -143,6 +110,8 @@ cp .env.local.example .env.local
 ```bash
 pnpm dev
 ```
+
+You can then access the front at the ngrok https url.
 
 ### Deploy your own Smart Account Factory (optional)
 
