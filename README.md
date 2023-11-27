@@ -7,13 +7,17 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 </br>
 
 <div align="center">
+<p>
 <a href="https://www.gnu.org/licenses/gpl-3.0">
   <img src="https://img.shields.io/badge/License-GPLv3-red.svg" alt="GPLv3"/>
 </a>
+</p>
 
+<p>
 <a href="https://passkeys-4337.vercel.app/">
   <img src="https://img.shields.io/badge/Sepolia%20testnet-blue?&label=deployed%20on" alt="Sepolia testnet"/>
 </a>
+</p>
 
 <!--
 <a href="https://passkeys-4337.vercel.app/">
