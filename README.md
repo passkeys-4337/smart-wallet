@@ -1,11 +1,10 @@
-<div style="display: flex; align-items: center; flex-direction: column">
-<img style="margin: auto;" src="https://passkeys-4337.vercel.app/favicon.ico" width="50"/>
-<h1 style="text-align:center; margin-bottom: 0">ERC-4337 Smart Wallet controlled with Passkeys</h1>
-</div>
-
-<p style="text-align:center">An open source contribution to the current research made by the Web3 community around account abstraction and improved users onboarding.</br>
+<div align="center">
+<img align="center" src="https://passkeys-4337.vercel.app/favicon.ico" width="50"/>
+<h1 align="center" style="margin-bottom: 0">ERC-4337 Smart Wallet controlled with Passkeys</h1>
+<p align="center">An open source contribution to the current research made by the Web3 community around account abstraction and improved users onboarding.</br>
 Live demo app: <a href="https://passkeys-4337.vercel.app">passkeys-4337.vercel.app</a>
 </p>
+</div>
 </br>
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-red.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -19,9 +18,9 @@ Live demo app: <a href="https://passkeys-4337.vercel.app">passkeys-4337.vercel.a
 
 Onboarding new users into blockchain applications is a challenge. Current solutions revolve around the creation of mnemonics that need to be handled either by the user himself or by the Web3 App. It often ends into combining poor user experience and/or introducing security risks.
 
-By using passkeys to control accounts, we abstract away the need for users to store mnemonics, and we allow users to use a familiar interface to control their accounts (biometric authentication) in a one click UX.
+By using passkeys to control accounts, we abstract away the need for users to store mnemonics, and we allow users to use a familiar interface to control their accounts (biometric authentication) in one click UX.
 
-Our wallet is meant to be a implementation of the [ERC-4337 standard](https://github.com/eth-infinitism/account-abstraction), that allow users to have an account in the form of a smart contract, controlled by whatever logic they want. In this case, we use passkeys to let users control their account thanks to the onchain P256 signature verification developed by [Daimo](https://github.com/daimo-eth/p256-verifier).
+Our wallet is meant to be a implementation of the [ERC-4337 standard](https://github.com/eth-infinitism/account-abstraction), that allow users to have an account in the form of a smart contract. In this case, we use passkeys to let users control their account thanks to the onchain P256 signature verification developed by [Daimo](https://github.com/daimo-eth/p256-verifier).
 
 We wanted to explore the possibilities of this two technologies, and how they can be used together to create a more user friendly experience, while ensuring security.
 
