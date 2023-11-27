@@ -13,11 +13,17 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 [![Twitter Follow](https://img.shields.io/twitter/follow/BigQ?style=social)](https://twitter.com/big_q__)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ben.anoufa.eth?style=social)](https://twitter.com/Baoufa)
 
+<div align="center">
+  <a href="https://www.youtube.com/embed/Z2gfLdU8NAU?si=N6PpRAtvXWyn9dAV" target="_blank" width="300">
+  <img src="https://i.imgur.com/ZaBW1Ci.png" />
+  </a>
+</div>
+
 # Project Summary
 
 Onboarding new users into blockchain applications is a challenge. Current solutions revolves around mnemonics that need to be stored to recover accounts on users wallets, effectively introducing security risks. By using passkeys to control accounts, we abstract away the need for users to store mnemonics and we allow users to use a familiar interface to control their accounts (biometric authentication) in one click UX.
 
-Our wallet is meant to be a implementation of the [ERC-4337 standard](https://github.com/eth-infinitism/account-abstraction), that allow users to have an account in the form of a smart contract. In this case, we use passkeys to let users control their account thanks to the onchain P256 signature verification developed by [Daimo](https://github.com/daimo-eth/p256-verifier).
+Our wallet is meant to be an implementation of the [ERC-4337 standard](https://github.com/eth-infinitism/account-abstraction), that allow users to have an account in the form of a smart contract. In this case, we use passkeys to let users control their account thanks to the onchain P256 signature verification developed by [Daimo](https://github.com/daimo-eth/p256-verifier).
 
 ## Acknowledgments
 
