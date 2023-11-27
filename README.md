@@ -19,8 +19,8 @@ Live demo app: <a href="https://passkeys-4337.vercel.app" target="_blank">passke
 </div>
 
 <div align="center">
-  <a href="https://www.youtube.com/embed/Z2gfLdU8NAU?si=N6PpRAtvXWyn9dAV" target="_blank" width="300">
-  <img src="https://i.imgur.com/ZaBW1Ci.png" />
+  <a href="hhttps://www.youtube.com/watch?v=Z2gfLdU8NAU" target="_blank" >
+  <img src="https://i.imgur.com/ZaBW1Ci.png" width="500" />
   </a>
 </div>
 
