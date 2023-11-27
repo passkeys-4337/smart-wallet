@@ -11,8 +11,9 @@ import { Metadata } from "next";
 import { ModalOnWCEvent } from "@/libs/wallet-connect/ModalOnWCEvent";
 
 export const metadata: Metadata = {
-  title: "Smart Wallet",
-  description: "Passkeys X ERC-4337",
+  title: "Smart Wallet - ERC-4337 x Passkeys",
+  description:
+    "Simple implementation of an ERC-4337 contract wallet controlled by Passkeys to enhance user experience and self-custodian private keys security.",
   viewport: {
     width: "device-width",
     height: "device-height",

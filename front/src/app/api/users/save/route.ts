@@ -38,17 +38,6 @@ export async function POST(req: Request) {
     args: [pubKey],
   });
 
-  // await PUBLIC_CLIENT.waitForTransactionReceipt({ hash });
-
-  // const createdUser = await PUBLIC_CLIENT.readContract({
-  //   address: process.env.NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as Hex,
-  //   abi: FACTORY_ABI,
-  //   functionName: "getUser",
-  //   args: [BigInt(id)],
-  // });
-
-  // send 1 wei to the user
-  // so that anyone can send a transaction to the user's smart wallet
   await walletClient.sendTransaction({
     to: smartWalletAddress,
     value: BigInt(1),
