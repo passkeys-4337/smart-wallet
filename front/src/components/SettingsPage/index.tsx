@@ -36,7 +36,7 @@ export default function SettingsPage() {
           Settings
         </Heading>
         <Flex direction="column" width={"100%"} align={"start"} gap={"2"}>
-          <Text>On Base Goerli network only:</Text>
+          <Text>On Sepolia testnet only:</Text>
           <Flex style={{ width: "100%" }} align={"center"} gap="2" justify={"between"}>
             <Tooltip content="Copied!" open={isCopied}>
               <Button

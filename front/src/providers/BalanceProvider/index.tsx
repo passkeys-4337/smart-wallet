@@ -7,7 +7,7 @@ import { Hex, formatEther, zeroAddress } from "viem";
 
 function useBalanceHook() {
   // balance in usd
-  const [balance, setBalance] = useState<string>("0.00");
+  const [balance, setBalance] = useState<string>("--.--");
   const [increment, setIncrement] = useState<number>(0);
 
   const { me } = useMe();
@@ -18,8 +18,6 @@ function useBalanceHook() {
       setBalance("0.00");
       return;
     }
-
-    console.log(user.balance);
     const priceData = await fetch("/api/price?ids=ethereum&currencies=usd");
     const price: number = Math.trunc((await priceData.json()).ethereum.usd * 100);
     const balance = formatEther((BigInt(user.balance) * BigInt(price)) / BigInt(100));
@@ -30,7 +28,7 @@ function useBalanceHook() {
     setIncrement((prev) => prev + 1);
   }, []);
 
-  let interval = useRef<any>(null);
+  let interval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!me?.keyId) return;
@@ -41,7 +39,7 @@ function useBalanceHook() {
     }, 3000);
 
     return () => {
-      clearInterval(interval.current);
+      interval.current && clearInterval(interval.current);
     };
   }, [me, getBalance, increment]);
 

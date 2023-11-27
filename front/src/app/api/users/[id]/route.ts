@@ -16,8 +16,5 @@ export async function GET(_req: Request, { params }: { params: { id: Hex } }) {
   });
 
   const balance = await PUBLIC_CLIENT.getBalance({ address: user.account });
-
-  console.log("balance", balance);
-
   return Response.json(JSON.parse(stringify({ ...user, id: toHex(user.id), balance })));
 }
