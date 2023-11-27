@@ -11,7 +11,7 @@ const PortalContainer = styled(Portal)<{ isopen: Boolean | undefined }>`
   width: 100%;
   height: 100svh;
   @media (min-width: 600px) {
-    height: 844px;
+    height: 760px;
   }
   pointer-events: ${({ isopen }) => (isopen ? "auto" : "none")};
 `;
@@ -33,7 +33,7 @@ const Modal = styled.div<{ $isOpen: Boolean }>`
   z-index: 100;
 
   @media (min-width: 600px) {
-    height: calc(844px * 0.7);
+    height: calc(760px * 0.7);
   }
 `;
 
@@ -46,7 +46,7 @@ const Overlay = styled.div<{ $isOpen: Boolean }>`
   width: 100%;
   height: 100svh;
   @media (min-width: 600px) {
-    height: 844px;
+    height: 760px;
   }
   visibility: ${({ $isOpen }) => ($isOpen ? "visible" : "hidden")};
   transition: opacity 0.3s ease-in-out;
@@ -62,7 +62,7 @@ const Overlay = styled.div<{ $isOpen: Boolean }>`
     width: 100%;
     height: 100svh;
     @media (min-width: 600px) {
-      height: 844px;
+      height: 760px;
     }
   }
 `;
