@@ -15,6 +15,17 @@ export async function GET(_req: Request, { params }: { params: { id: Hex } }) {
     args: [BigInt(id)],
   });
 
-  const balance = await PUBLIC_CLIENT.getBalance({ address: user.account });
+  //const balance = await PUBLIC_CLIENT.getBalance({ address: user.account });
+  let balance = BigInt(0);
+
+  // Using etherscan api instead of getBalance as Sepolia rcp node is not inconsistent
+  if (user?.account) {
+    const result = await fetch(
+      `https://api-sepolia.etherscan.io/api?module=account&action=balance&address=${user.account}&tag=latest&apikey=${process.env.ETHERSCAN_API_KEY}`,
+    );
+    const resultJSON = await result.json();
+    balance = BigInt(resultJSON?.result || 0);
+  }
+
   return Response.json(JSON.parse(stringify({ ...user, id: toHex(user.id), balance })));
 }
