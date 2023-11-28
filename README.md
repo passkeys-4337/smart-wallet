@@ -30,6 +30,12 @@ Onboarding new users into blockchain applications is a challenge. Current soluti
 
 Our wallet is meant to be an implementation of the [ERC-4337 standard](https://github.com/eth-infinitism/account-abstraction), that allow users to have an account in the form of a smart contract. In this case, we use passkeys to let users control their account thanks to the onchain P256 signature verification developed by [Daimo](https://github.com/daimo-eth/p256-verifier).
 
+</br>
+
+![image](https://i.imgur.com/yqsyRgn.png)
+
+
+
 ## Acknowledgments
 
 We wanted to explore the possibilities of this two technologies, and how they can be used together to create a more user friendly experience, while ensuring security.
