@@ -22,6 +22,7 @@ export async function GET(_req: Request, { params }: { params: { id: Hex } }) {
   if (user?.account) {
     const result = await fetch(
       `https://api-sepolia.etherscan.io/api?module=account&action=balance&address=${user.account}&tag=latest&apikey=${process.env.ETHERSCAN_API_KEY}`,
+      { cache: "no-store" },
     );
     const resultJSON = await result.json();
     balance = BigInt(resultJSON?.result || 0);
